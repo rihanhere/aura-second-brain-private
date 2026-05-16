@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: aura-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build --workspace apps/api
+    startCommand: npm run start --workspace apps/api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.19.0
+      - key: APP_ORIGIN
+        value: "*"
+      - key: BETA_DAILY_MESSAGE_LIMIT
+        value: "100"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENROUTER_API_KEYS
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: z-ai/glm-4.5-air
+      - key: OPENROUTER_FALLBACK_MODELS
+        value: google/gemini-flash-1.5
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_TRANSCRIPTION_MODEL
+        value: whisper-large-v3-turbo
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_TTS_MODEL
+        value: gemini-2.5-flash-preview-tts
+      - key: GEMINI_TTS_VOICE
+        value: Sulafat

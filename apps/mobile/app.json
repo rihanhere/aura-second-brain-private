@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "AURA",
+    "slug": "aura-ai-life-journal",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "aura",
+    "jsEngine": "jsc",
+    "newArchEnabled": false,
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.aura.journal.recall",
+      "buildNumber": "1",
+      "jsEngine": "jsc",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "AURA uses the microphone so you can capture your life journal by voice.",
+        "NSSpeechRecognitionUsageDescription": "AURA can transcribe voice captures into journal memories.",
+        "NSLocalNetworkUsageDescription": "AURA connects to your local development backend for voice and AI testing.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true,
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "package": "ai.aura.journal.recall",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "plugins": [
+      "expo-notifications",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "AURA uses the microphone so you can capture your life journal by voice."
+        }
+      ],
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": false
+          }
+        }
+      ]
+    ]
+  }
+}

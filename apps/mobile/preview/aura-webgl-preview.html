@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AURA Minimal Liquid Preview</title>
+    <style>
+      :root {
+        --blue: #245bff;
+        --text: #071229;
+        --muted: rgba(7, 18, 41, 0.48);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        align-items: center;
+        background: #f8fafd;
+        color: var(--text);
+        display: flex;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+        justify-content: center;
+        margin: 0;
+        min-height: 100vh;
+        padding: 22px;
+      }
+
+      .phone {
+        background: #f8fafd;
+        border: 1px solid rgba(18, 36, 82, 0.075);
+        border-radius: 34px;
+        box-shadow: 0 34px 86px rgba(32, 48, 90, 0.09);
+        cursor: pointer;
+        height: min(932px, calc(100vh - 44px));
+        max-height: 932px;
+        max-width: 430px;
+        min-height: 720px;
+        overflow: hidden;
+        position: relative;
+        width: min(430px, calc(100vw - 32px));
+      }
+
+      .phone::before {
+        background: transparent;
+        content: "";
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: 0;
+      }
+
+      .header,
+      .status {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 420ms ease;
+      }
+
+      .phone.loading .header,
+      .phone.loading .status,
+      .phone.loading .type-menu,
+      .phone.loading .orb-stage,
+      .phone.revealing .header,
+      .phone.revealing .status,
+      .phone.revealing .type-menu,
+      .phone.booting-home .header,
+      .phone.booting-home .status,
+      .phone.booting-home .type-menu,
+      .phone.waiting-keys .header,
+      .phone.waiting-keys .status,
+      .phone.waiting-keys .type-menu,
+      .phone.needs-keys .header,
+      .phone.needs-keys .status,
+      .phone.needs-keys .type-menu {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .phone.show-ui .header,
+      .phone.has-reply .status,
+      .phone.listening .status,
+      .phone.thinking .status {
+        opacity: 1;
+      }
+
+      .header {
+        align-items: flex-start;
+        display: flex;
+        justify-content: space-between;
+        left: 0;
+        padding: 32px 25px 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 5;
+      }
+
+      .round {
+        align-items: center;
+        background: rgba(250, 252, 255, 0.82);
+        border: 1px solid rgba(18, 36, 82, 0.065);
+        border-radius: 999px;
+        box-shadow: 0 18px 34px rgba(31, 48, 96, 0.1);
+        color: #74809d;
+        display: flex;
+        height: 52px;
+        justify-content: center;
+        width: 52px;
+      }
+
+      .type-round {
+        color: rgba(0, 0, 0, 0.86);
+        font-size: 21px;
+        font-weight: 700;
+      }
+
+      .type-menu {
+        background: rgba(248, 250, 253, 0.96);
+        border: 1px solid rgba(18, 36, 82, 0.08);
+        border-radius: 22px;
+        box-shadow: 0 18px 34px rgba(31, 48, 96, 0.1);
+        opacity: 0;
+        padding: 8px;
+        pointer-events: none;
+        position: absolute;
+        right: 24px;
+        top: 91px;
+        transform: translateY(-4px);
+        transition: opacity 260ms ease, transform 260ms ease;
+        width: 236px;
+        z-index: 8;
+      }
+
+      .phone.show-type .type-menu {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .drawer-scrim {
+        background: rgba(248, 250, 253, 0.72);
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        transition: opacity 360ms ease;
+        z-index: 12;
+      }
+
+      .phone.show-menu .drawer-scrim {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .drawer-close {
+        align-items: center;
+        color: rgba(28, 28, 30, 0.72);
+        display: flex;
+        font-size: 34px;
+        font-weight: 200;
+        height: 46px;
+        justify-content: center;
+        left: 22px;
+        position: absolute;
+        top: 22px;
+        width: 46px;
+      }
+
+      .drawer {
+        background: rgba(248, 250, 253, 0.88);
+        border: 1px solid rgba(28, 28, 30, 0.055);
+        border-radius: 34px;
+        bottom: 30px;
+        box-shadow: 0 24px 58px rgba(102, 112, 133, 0.11);
+        opacity: 0;
+        overflow: hidden;
+        padding: 52px 28px 28px;
+        pointer-events: none;
+        position: absolute;
+        right: 18px;
+        top: 58px;
+        transform: translateX(18px) scale(0.985);
+        transition: opacity 420ms ease, transform 520ms cubic-bezier(0.2, 0.85, 0.2, 1);
+        width: 82%;
+        z-index: 13;
+      }
+
+      .phone.show-menu .drawer {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0) scale(1);
+      }
+
+      .drawer-watermark {
+        bottom: 42%;
+        color: rgba(28, 28, 30, 0.026);
+        font-size: 62px;
+        font-weight: 200;
+        left: 0;
+        letter-spacing: 20px;
+        padding-left: 20px;
+        position: absolute;
+        right: 0;
+        text-align: center;
+      }
+
+      .drawer-brand {
+        margin-bottom: 40px;
+        text-align: center;
+      }
+
+      .drawer-logo {
+        color: rgba(28, 28, 30, 0.74);
+        font-size: 22px;
+        font-weight: 200;
+        letter-spacing: 11px;
+        line-height: 1;
+        padding-left: 11px;
+      }
+
+      .drawer-caption {
+        color: rgba(28, 28, 30, 0.42);
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 8px;
+      }
+
+      .drawer-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .drawer-divider {
+        background: rgba(28, 28, 30, 0.07);
+        height: 1px;
+        margin: 18px 0 16px;
+      }
+
+      .drawer-item {
+        align-items: center;
+        border-radius: 24px;
+        display: flex;
+        gap: 18px;
+        min-height: 72px;
+        padding: 4px 10px;
+      }
+
+      .drawer-icon {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.62);
+        border: 1px solid rgba(28, 28, 30, 0.045);
+        border-radius: 20px;
+        box-shadow: 0 10px 18px rgba(102, 112, 133, 0.05);
+        color: rgba(28, 28, 30, 0.62);
+        display: flex;
+        font-size: 22px;
+        height: 44px;
+        justify-content: center;
+        width: 44px;
+      }
+
+      .drawer-copy {
+        flex: 1;
+      }
+
+      .drawer-title {
+        color: rgba(7, 18, 41, 0.9);
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .drawer-subtitle {
+        color: rgba(7, 18, 41, 0.42);
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 4px;
+      }
+
+      .drawer-chevron {
+        color: rgba(28, 28, 30, 0.34);
+        font-size: 31px;
+        font-weight: 200;
+      }
+
+      .type-menu-row {
+        align-items: center;
+        border-radius: 17px;
+        color: var(--text);
+        display: flex;
+        gap: 12px;
+        min-height: 62px;
+        padding: 0 10px;
+      }
+
+      .type-icon {
+        align-items: center;
+        background: rgba(7, 18, 41, 0.055);
+        border-radius: 15px;
+        color: rgba(0, 0, 0, 0.86);
+        display: flex;
+        font-size: 18px;
+        height: 38px;
+        justify-content: center;
+        width: 38px;
+      }
+
+      .type-title {
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .type-caption {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 3px;
+      }
+
+      .menu-lines,
+      .slider-lines {
+        height: 22px;
+        position: relative;
+        width: 24px;
+      }
+
+      .menu-lines::before,
+      .menu-lines::after,
+      .menu-lines span,
+      .slider-lines::before,
+      .slider-lines::after,
+      .slider-lines span {
+        background: currentColor;
+        border-radius: 4px;
+        content: "";
+        height: 2px;
+        left: 2px;
+        position: absolute;
+        width: 20px;
+      }
+
+      .menu-lines::before,
+      .slider-lines::before {
+        top: 4px;
+      }
+
+      .menu-lines span,
+      .slider-lines span {
+        top: 11px;
+      }
+
+      .menu-lines::after,
+      .slider-lines::after {
+        top: 18px;
+      }
+
+      .brand {
+        margin-top: 1px;
+        text-align: center;
+      }
+
+      .logo {
+        color: rgba(0, 0, 0, 0.92);
+        font-size: 24px;
+        font-weight: 200;
+        letter-spacing: 10px;
+        line-height: 1;
+        padding-left: 10px;
+      }
+
+      .tagline {
+        color: rgba(73, 83, 116, 0.72);
+        font-size: 16px;
+        font-weight: 500;
+        margin-top: 8px;
+      }
+
+      .launch {
+        align-items: center;
+        background: #f8fafd;
+        display: flex;
+        inset: 0;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        transition: opacity 720ms ease;
+        z-index: 20;
+      }
+
+      .phone.loading .launch {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .phone.revealing .launch,
+      .phone.booting-home .launch,
+      .phone.main-ready .launch {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .launch-orb {
+        display: none;
+      }
+
+      .launch-copy {
+        align-items: center;
+        color: rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        font-weight: 300;
+        left: 24px;
+        opacity: 0;
+        position: absolute;
+        right: 24px;
+        text-align: center;
+        top: 41%;
+        transform: translateY(10px);
+      }
+
+      .launch-logo {
+        color: rgba(0, 0, 0, 0.96);
+        font-size: 70px;
+        font-weight: 200;
+        letter-spacing: 23px;
+        line-height: 1.22;
+        padding-left: 23px;
+      }
+
+      .launch-line {
+        color: rgba(0, 0, 0, 0.9);
+        font-size: 31px;
+        letter-spacing: 19px;
+        line-height: 1.45;
+        margin-top: 20px;
+        padding-left: 19px;
+      }
+
+      .launch-up {
+        color: rgba(0, 0, 0, 0.9);
+        font-size: 32px;
+        letter-spacing: 24px;
+        line-height: 1.45;
+        margin-top: 18px;
+        padding-left: 24px;
+      }
+
+      .phone.loading .launch-copy {
+        animation: launchCopy 1.8s ease forwards;
+      }
+
+      @keyframes launchCopy {
+        0%, 10% { opacity: 0; transform: translateY(10px); }
+        28%, 82% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-6px); }
+      }
+
+      .onboarding {
+        background: #f8fafd;
+        inset: 0;
+        opacity: 0;
+        padding: 88px 25px 26px;
+        pointer-events: none;
+        position: absolute;
+        transform: translateY(10px);
+        transition: opacity 720ms ease, transform 720ms cubic-bezier(0.2, 0.85, 0.2, 1);
+        z-index: 18;
+      }
+
+      .phone.needs-keys .onboarding {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .phone.booting-home .onboarding,
+      .phone.main-ready .onboarding {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-8px);
+      }
+
+      .key-card {
+        margin-top: 58px;
+      }
+
+      .key-title {
+        color: rgba(7, 18, 41, 0.86);
+        font-size: 23px;
+        font-weight: 760;
+        text-align: center;
+      }
+
+      .key-copy {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 650;
+        line-height: 1.45;
+        margin: 9px auto 28px;
+        max-width: 310px;
+        text-align: center;
+      }
+
+      .key-label {
+        color: rgba(7, 18, 41, 0.82);
+        font-size: 13px;
+        font-weight: 800;
+        margin: 14px 0 5px;
+      }
+
+      .key-input {
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(18, 36, 82, 0.08);
+        border-radius: 18px;
+        box-shadow: 0 14px 34px rgba(32, 48, 90, 0.055);
+        color: rgba(7, 18, 41, 0.46);
+        font-size: 12px;
+        font-weight: 700;
+        outline: none;
+        padding: 14px;
+        width: 100%;
+      }
+
+      .key-input::placeholder {
+        color: rgba(7, 18, 41, 0.35);
+      }
+
+      .key-button {
+        align-items: center;
+        background: rgba(36, 91, 255, 0.34);
+        border-radius: 18px;
+        color: white;
+        display: flex;
+        font-size: 14px;
+        font-weight: 800;
+        height: 52px;
+        justify-content: center;
+        margin-top: 16px;
+        opacity: 0.52;
+        pointer-events: none;
+        transition: opacity 280ms ease, background 280ms ease, transform 280ms ease;
+      }
+
+      .phone.keys-ready .key-button {
+        background: var(--blue);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .phone.keys-ready .key-button:active {
+        transform: scale(0.98);
+      }
+
+      .orb-stage {
+        align-items: center;
+        display: flex;
+        height: min(520px, 62vh);
+        justify-content: center;
+        left: 50%;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -51%);
+        transition: opacity 880ms ease;
+        width: min(520px, 120vw);
+        z-index: 1;
+      }
+
+      .phone.revealing .orb-stage,
+      .phone.booting-home .orb-stage,
+      .phone.show-ui .orb-stage,
+      .phone.has-reply .orb-stage,
+      .phone.main-ready .orb-stage {
+        opacity: 1;
+      }
+
+      .floating-aura {
+        animation: logoFloat 11s ease-in-out infinite, logoBreath 5.7s ease-in-out infinite;
+        color: rgba(28, 28, 30, 0.62);
+        font-size: 54px;
+        font-weight: 200;
+        letter-spacing: 18px;
+        line-height: 1;
+        padding-left: 18px;
+        position: relative;
+        text-align: center;
+        z-index: 2;
+      }
+
+      .logo-halo {
+        animation: haloFloat 11s ease-in-out infinite;
+        border: 1px solid rgba(28, 28, 30, 0.018);
+        border-radius: 999px;
+        height: 320px;
+        position: absolute;
+        width: 320px;
+        z-index: 1;
+      }
+
+      @keyframes logoFloat {
+        0%, 100% {
+          transform: translateY(-5px) scale(0.992);
+        }
+        50% {
+          transform: translateY(7px) scale(1.012);
+        }
+      }
+
+      @keyframes logoBreath {
+        0%, 100% {
+          opacity: 0.9;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes haloFloat {
+        0%, 100% {
+          transform: translateY(-5px) scale(0.992);
+        }
+        50% {
+          transform: translateY(7px) scale(1.012);
+        }
+      }
+
+      .status {
+        bottom: 70px;
+        left: 24px;
+        position: absolute;
+        right: 24px;
+        text-align: center;
+        z-index: 4;
+      }
+
+      .state {
+        color: rgba(7, 18, 41, 0.58);
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.45;
+        text-shadow: 0 1px 12px rgba(255, 255, 255, 0.72);
+      }
+
+      .reply {
+        animation: replyIn 520ms ease forwards;
+        color: rgba(7, 18, 41, 0.58);
+        display: none;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.45;
+        margin: 0 auto;
+        max-width: 340px;
+        opacity: 0;
+        text-shadow: 0 1px 12px rgba(255, 255, 255, 0.72);
+      }
+
+      @keyframes replyIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .phone.has-reply .state {
+        display: none;
+      }
+
+      .phone.has-reply .reply {
+        display: block;
+      }
+
+      @media (max-width: 760px) {
+        body {
+          padding: 0;
+        }
+
+        .phone {
+          border: 0;
+          border-radius: 0;
+          height: 100vh;
+          max-height: none;
+          max-width: none;
+          min-height: 700px;
+          width: 100vw;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="phone loading" id="phone">
+      <section class="launch">
+        <img class="launch-orb" src="./aura-fluid-orb-transparent.png" alt="" />
+        <div class="launch-copy">
+          <div class="launch-logo">ΛURΛ</div>
+          <div class="launch-line">WAKING</div>
+          <div class="launch-up">UP</div>
+        </div>
+      </section>
+
+      <section class="onboarding">
+        <div class="brand">
+          <div class="logo">ΛURΛ</div>
+          <div class="tagline">Your AI Life Journal</div>
+        </div>
+        <div class="key-card">
+          <div class="key-title">Bring AURA online</div>
+          <div class="key-copy">Add your keys once. AURA uses them to hear you, think with context, and speak back.</div>
+          <div class="key-label">Soul</div>
+          <div class="key-input">OpenRouter keys</div>
+          <div class="key-label">Hearing</div>
+          <div class="key-input">Groq Whisper keys</div>
+          <div class="key-label">Voice</div>
+          <div class="key-input">Gemini voice + memory keys</div>
+          <div class="key-button" id="previewUnlock">Start AURA</div>
+        </div>
+      </section>
+
+      <header class="header">
+        <div class="round" id="menuButton"><div class="menu-lines"><span></span></div></div>
+        <div class="brand">
+          <div class="logo">ΛURΛ</div>
+          <div class="tagline">Your AI Life Journal</div>
+        </div>
+        <div class="round type-round" id="typeButton">⌨</div>
+      </header>
+
+      <section class="type-menu" id="typeMenu">
+        <div class="type-menu-row">
+          <div class="type-icon">⌨</div>
+          <div>
+            <div class="type-title">Type instead</div>
+            <div class="type-caption">Open keyboard mode</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="drawer-scrim" id="drawerScrim">
+        <div class="drawer-close">×</div>
+      </section>
+      <aside class="drawer" id="drawer">
+        <div class="drawer-watermark">ΛURΛ</div>
+        <div class="drawer-brand">
+          <div class="drawer-logo">ΛURΛ</div>
+          <div class="drawer-caption">Your AI Life Journal</div>
+        </div>
+        <div class="drawer-list">
+          <div class="drawer-item">
+            <div class="drawer-icon">◇</div>
+            <div class="drawer-copy">
+              <div class="drawer-title">Journal</div>
+              <div class="drawer-subtitle">Your thoughts & conversations</div>
+            </div>
+            <div class="drawer-chevron">›</div>
+          </div>
+          <div class="drawer-item">
+            <div class="drawer-icon">◌</div>
+            <div class="drawer-copy">
+              <div class="drawer-title">Reminders</div>
+              <div class="drawer-subtitle">AURA will bring it back on time</div>
+            </div>
+            <div class="drawer-chevron">›</div>
+          </div>
+          <div class="drawer-item">
+            <div class="drawer-icon">▥</div>
+            <div class="drawer-copy">
+              <div class="drawer-title">Insights</div>
+              <div class="drawer-subtitle">Patterns & reflections</div>
+            </div>
+            <div class="drawer-chevron">›</div>
+          </div>
+          <div class="drawer-divider"></div>
+          <div class="drawer-item">
+            <div class="drawer-icon">○</div>
+            <div class="drawer-copy">
+              <div class="drawer-title">You</div>
+              <div class="drawer-subtitle">Your profile & preferences</div>
+            </div>
+            <div class="drawer-chevron">›</div>
+          </div>
+          <div class="drawer-item">
+            <div class="drawer-icon">⌁</div>
+            <div class="drawer-copy">
+              <div class="drawer-title">Settings</div>
+              <div class="drawer-subtitle">App settings & preferences</div>
+            </div>
+            <div class="drawer-chevron">›</div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="orb-stage">
+        <div class="logo-halo"></div>
+        <div class="floating-aura">ΛURΛ</div>
+      </section>
+
+      <section class="status">
+        <div class="state" id="stateText">Tap to speak</div>
+        <div class="reply" id="replyText">I heard you. I’m holding that thought with the rest of your memory.</div>
+      </section>
+    </main>
+
+    <script>
+      const phone = document.getElementById("phone");
+      const typeButton = document.getElementById("typeButton");
+      const menuButton = document.getElementById("menuButton");
+      const drawerScrim = document.getElementById("drawerScrim");
+      const drawer = document.getElementById("drawer");
+      const previewUnlock = document.getElementById("previewUnlock");
+      const stateText = document.getElementById("stateText");
+      const replyText = document.getElementById("replyText");
+      let hideTimer = null;
+      let pressTimer = null;
+      let longPressTriggered = false;
+      let conversationState = "idle";
+
+      function revealChrome() {
+        phone.classList.add("show-ui");
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => phone.classList.remove("show-ui"), 2800);
+      }
+
+      function startListening() {
+        conversationState = "listening";
+        phone.classList.remove("has-reply", "show-type", "thinking");
+        phone.classList.add("listening");
+        stateText.textContent = "Listening";
+      }
+
+      function startThinking() {
+        conversationState = "thinking";
+        phone.classList.remove("has-reply", "show-type", "listening");
+        phone.classList.add("thinking");
+        stateText.textContent = "Thinking";
+        setTimeout(showReply, 900);
+      }
+
+      function showReply() {
+        conversationState = "idle";
+        replyText.textContent = "I heard you. I’m holding that thought with the rest of your memory.";
+        phone.classList.add("has-reply");
+        phone.classList.remove("show-type", "listening", "thinking");
+      }
+
+      phone.addEventListener("pointerdown", () => {
+        if (phone.classList.contains("loading")) return;
+        longPressTriggered = false;
+        clearTimeout(pressTimer);
+        pressTimer = setTimeout(() => {
+          longPressTriggered = true;
+          revealChrome();
+        }, 380);
+      });
+
+      phone.addEventListener("pointerup", () => {
+        clearTimeout(pressTimer);
+      });
+
+      phone.addEventListener("click", () => {
+        if (phone.classList.contains("loading")) return;
+        if (longPressTriggered) return;
+        if (conversationState === "listening") {
+          startThinking();
+          return;
+        }
+        startListening();
+      });
+      typeButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        revealChrome();
+        phone.classList.toggle("show-type");
+      });
+      menuButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        revealChrome();
+        phone.classList.remove("show-type");
+        phone.classList.add("show-menu");
+      });
+      drawer.addEventListener("click", (event) => event.stopPropagation());
+      drawerScrim.addEventListener("click", (event) => {
+        event.stopPropagation();
+        phone.classList.remove("show-menu");
+      });
+      setTimeout(() => {
+        phone.classList.remove("loading");
+        phone.classList.add("revealing");
+      }, 1820);
+      setTimeout(() => {
+        phone.classList.remove("revealing");
+        phone.classList.remove("waiting-keys", "needs-keys");
+        phone.classList.add("main-ready", "show-ui", "show-menu");
+      }, 2480);
+
+      setTimeout(() => {
+        if (!phone.classList.contains("main-ready")) {
+          phone.classList.remove("loading", "revealing", "waiting-keys", "needs-keys");
+          phone.classList.add("main-ready");
+        }
+      }, 3600);
+
+      /*
+      const canvas = document.getElementById("auraOverlay");
+      if (canvas) {
+      const gl = canvas.getContext("webgl", { alpha: true, antialias: true, depth: false, stencil: false, premultipliedAlpha: false });
+
+      const vertex = `
+        attribute vec2 aPosition;
+        varying vec2 vUv;
+        void main() {
+          vUv = aPosition * 0.5 + 0.5;
+          gl_Position = vec4(aPosition, 0.0, 1.0);
+        }
+      `;
+
+      const fragment = `
+        precision highp float;
+        uniform float uTime;
+        uniform float uEnergy;
+        uniform vec2 uResolution;
+        varying vec2 vUv;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(
+            mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+            mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
+            u.y
+          );
+        }
+
+        float fbm(vec2 p) {
+          float value = 0.0;
+          float amp = 0.5;
+          mat2 rotate = mat2(0.8, -0.6, 0.6, 0.8);
+          for (int i = 0; i < 4; i++) {
+            value += amp * noise(p);
+            p = rotate * p * 2.02 + 0.17;
+            amp *= 0.52;
+          }
+          return value;
+        }
+
+        float particle(vec2 p, vec2 center, float size) {
+          return smoothstep(size, 0.0, length(p - center));
+        }
+
+        void main() {
+          vec2 p = (vUv - 0.5) * vec2(uResolution.x / uResolution.y, 1.0);
+          float t = uTime;
+          float energy = clamp(uEnergy, 0.0, 1.0);
+          float r = length(p);
+          float a = atan(p.y, p.x);
+
+          vec2 flow = p;
+          flow += vec2(
+            sin(p.y * 4.0 + t * 0.42),
+            cos(p.x * 3.7 - t * 0.38)
+          ) * 0.045;
+
+          float breath = 0.5 + 0.5 * sin(t * 1.12);
+          float organism = fbm(flow * 2.3 + vec2(t * 0.055, -t * 0.035));
+          float inner = fbm(flow * 5.2 + vec2(-t * 0.11, t * 0.08));
+          float boundary = 0.45 + sin(a * 3.0 + t * 0.28) * 0.035 + sin(a * 5.0 - t * 0.18) * 0.02;
+          float mask = smoothstep(boundary + 0.035, boundary - 0.05, r);
+          float halo = smoothstep(0.58, 0.06, r) * 0.08;
+          float silk = 0.0;
+          silk += smoothstep(0.018, 0.0, abs(r - (0.31 + sin(a * 2.5 + t * 0.42 + organism * 2.0) * 0.04))) * 0.2;
+          silk += smoothstep(0.012, 0.0, abs(r - (0.21 + sin(a * 3.7 - t * 0.36 + inner * 2.5) * 0.03))) * 0.14;
+          silk += smoothstep(0.01, 0.0, abs(fbm(flow * 8.0 + t * 0.07) - 0.58)) * mask * 0.12;
+
+          vec2 lightAnchor = vec2(
+            0.03 + sin(t * 0.31) * 0.035,
+            0.035 + cos(t * 0.27) * 0.028
+          );
+          vec2 light = p - lightAnchor;
+          float core = smoothstep(0.11 + energy * 0.04, 0.0, length(light));
+          float pin = smoothstep(0.02, 0.0, length(light));
+          float rays = smoothstep(0.006, 0.0, abs(light.x)) * smoothstep(0.32, 0.0, length(light));
+          rays += smoothstep(0.006, 0.0, abs(light.y)) * smoothstep(0.32, 0.0, length(light));
+
+          float veins = 0.0;
+          veins += smoothstep(0.018, 0.0, abs(sin((p.x * 2.2 + p.y * 4.8 + organism * 2.6 + t * 0.26) * 4.0))) * mask * 0.08;
+          veins += smoothstep(0.014, 0.0, abs(sin((p.x * -3.6 + p.y * 2.4 + inner * 2.2 - t * 0.2) * 3.2))) * mask * 0.06;
+
+          float sparkle = 0.0;
+          for (int i = 0; i < 42; i++) {
+            float fi = float(i);
+            vec2 center = vec2(hash(vec2(fi, 4.1)), hash(vec2(fi, 8.3)));
+            center = (center - 0.5) * vec2(0.98, 0.92);
+            center += vec2(sin(t * 0.13 + fi) * 0.018, cos(t * 0.1 + fi * 1.6) * 0.014);
+            float bias = smoothstep(0.48, 0.08, length(center));
+            sparkle += particle(p, center, 0.0028 + hash(center + fi) * 0.0042) * (0.14 + bias * 0.72);
+          }
+
+          vec3 blue = vec3(0.12, 0.35, 1.0);
+          vec3 ice = vec3(0.72, 0.9, 1.0);
+          vec3 ivory = vec3(1.0, 0.985, 0.92);
+          vec3 color = ice * halo + ivory * core * (0.42 + energy * 0.48) + ivory * pin + ivory * rays * 0.16;
+          color += ice * silk * (0.34 + breath * 0.14 + energy * 0.15);
+          color += ivory * veins * (0.6 + energy * 0.4);
+          color += blue * mask * organism * 0.035;
+          color += blue * sparkle * 0.24 + ivory * sparkle * 0.16;
+
+          float alpha = halo + silk * 0.3 + veins * 0.28 + core * 0.4 + pin * 0.72 + rays * 0.1 + sparkle * 0.28;
+          alpha *= 0.52 + energy * 0.34;
+          alpha *= smoothstep(0.62, 0.05, r);
+          gl_FragColor = vec4(color, clamp(alpha, 0.0, 0.62));
+        }
+      `;
+
+      function compile(type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader));
+        return shader;
+      }
+      }
+
+      if (gl) {
+        const program = gl.createProgram();
+        gl.attachShader(program, compile(gl.VERTEX_SHADER, vertex));
+        gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragment));
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
+
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+
+        const position = gl.getAttribLocation(program, "aPosition");
+        const uTime = gl.getUniformLocation(program, "uTime");
+        const uEnergy = gl.getUniformLocation(program, "uEnergy");
+        const uResolution = gl.getUniformLocation(program, "uResolution");
+        gl.useProgram(program);
+        gl.enableVertexAttribArray(position);
+        gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+        const started = performance.now();
+        let overlayEnergy = 0.15;
+
+        function targetEnergy() {
+          if (conversationState === "listening") return 0.7;
+          if (conversationState === "thinking") return 0.5;
+          return 0.15;
+        }
+
+        function resize() {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          const rect = canvas.getBoundingClientRect();
+          const w = Math.floor(rect.width * dpr);
+          const h = Math.floor(rect.height * dpr);
+          if (canvas.width !== w || canvas.height !== h) {
+            canvas.width = w;
+            canvas.height = h;
+          }
+        }
+
+        function draw() {
+          resize();
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+          overlayEnergy += (targetEnergy() - overlayEnergy) * 0.055;
+          gl.uniform1f(uTime, (performance.now() - started) / 1000);
+          gl.uniform1f(uEnergy, overlayEnergy);
+          gl.uniform2f(uResolution, canvas.width, canvas.height);
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+          requestAnimationFrame(draw);
+        }
+
+        draw();
+      }
+      */
+    </script>
+  </body>
+</html>

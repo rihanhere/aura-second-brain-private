@@ -1,0 +1,27 @@
+{
+  "name": "second-brain-ai",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Second Brain AI - a mobile personal cognitive operating system powered by AI.",
+  "workspaces": [
+    "apps/mobile",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/api",
+    "mobile": "npm run start --workspace apps/mobile",
+    "api": "npm run dev --workspace apps/api",
+    "ipa:ios": "bash scripts/build-ios-ipa.sh",
+    "beta:chaos": "node scripts/aura-beta-chaos.mjs",
+    "beta:concurrent": "node scripts/aura-beta-concurrent.mjs",
+    "beta:interrupt-storm": "node scripts/aura-beta-interrupt-storm.mjs",
+    "beta:brain-burst": "node scripts/aura-beta-brain-burst.mjs",
+    "beta:scale": "node scripts/aura-beta-scale.mjs",
+    "beta:real-user": "node scripts/aura-real-user-simulation.mjs",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

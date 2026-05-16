@@ -1,0 +1,611 @@
+<!doctype html><html><head><meta charset="utf-8"><title>AURA Product Memory Vision</title><style>
+@page { size: A4; margin: 0; }
+:root { --bg:#f8f9fb; --paper:#fbfcfe; --ink:#11151d; --muted:#657083; --soft:#8b94a6; --line:rgba(25,32,46,.10); --blue:#3e63ff; --blue2:#7fc9ff; --card:rgba(255,255,255,.64); }
+* { box-sizing:border-box; }
+body { margin:0; background:#e7ebf2; color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",Arial,sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.page { width:210mm; height:297mm; position:relative; overflow:hidden; page-break-after:always; background: radial-gradient(circle at 50% -8%, #fff 0, #fcfdff 31%, var(--bg) 100%); }
+.grain { position:absolute; inset:0; opacity:.55; background-image: radial-gradient(circle at 14% 8%, rgba(62,99,255,.035), transparent 23%), radial-gradient(circle at 82% 78%, rgba(127,201,255,.075), transparent 28%), linear-gradient(135deg, rgba(255,255,255,.38), rgba(225,230,238,.18)); }
+.content { position:relative; z-index:2; padding:17mm 17mm 18mm; height:100%; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12mm; }
+.brand { font-size:15px; letter-spacing:.58em; font-weight:300; color:#101216; }
+.pill { border:1px solid var(--line); border-radius:999px; padding:7px 11px; background:rgba(255,255,255,.58); color:var(--soft); font-size:10px; font-weight:750; text-transform:uppercase; letter-spacing:.08em; }
+h1 { margin:0 0 7mm; max-width:164mm; font-size:33px; line-height:1.03; letter-spacing:-.85px; font-weight:770; }
+.lead { max-width:166mm; margin:0 0 8mm; color:var(--muted); font-size:14px; line-height:1.54; }
+.hero-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:11mm; align-items:center; margin-top:8mm; }
+.quote { font-size:24px; line-height:1.22; font-weight:530; letter-spacing:-.25px; color:#202631; margin:0 0 10mm; }
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.stat, .card, .step, .mini-table, .checklist div { border:1px solid var(--line); background:var(--card); backdrop-filter: blur(18px); box-shadow:0 18px 45px rgba(40,55,95,.055); }
+.stat { border-radius:18px; padding:12px; min-height:73px; }
+.num { font-size:18px; font-weight:790; color:#1f2633; }
+.label { color:var(--soft); font-size:10.8px; line-height:1.35; margin-top:5px; }
+.orb-shell { min-height:335px; display:flex; align-items:center; justify-content:center; position:relative; }
+.orb { width:282px; height:282px; border-radius:44% 56% 54% 46%/47% 43% 57% 53%; opacity:.95; filter:drop-shadow(0 42px 72px rgba(69,104,190,.13)); background:radial-gradient(circle at 56% 54%,rgba(255,255,255,.98) 0 3%,transparent 5%),radial-gradient(circle at 58% 48%,rgba(205,243,255,.82),transparent 18%),radial-gradient(circle at 42% 45%,rgba(43,82,255,.88),transparent 35%),radial-gradient(circle at 68% 66%,rgba(28,91,242,.62),transparent 25%),conic-gradient(from 210deg,rgba(255,255,255,.82),rgba(183,234,255,.30),rgba(75,112,255,.58),rgba(255,255,255,.78)); position:relative; }
+.orb span { position:absolute; inset:10%; border-radius:inherit; background:linear-gradient(145deg, rgba(255,255,255,.52), transparent 38%, rgba(255,255,255,.32) 62%, transparent); filter:blur(2px); }
+.particle { position:absolute; width:6px; height:6px; border-radius:999px; background:rgba(76,111,255,.50); box-shadow:0 0 16px rgba(76,111,255,.22); } .p1{left:45px;top:105px}.p2{right:55px;top:95px;width:8px;height:8px}.p3{left:80px;bottom:82px;width:5px;height:5px}.p4{right:105px;bottom:68px}
+.section-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:8mm; } .section-grid.two{grid-template-columns:1fr 1fr;}
+.card { border-radius:18px; padding:14px; min-height:111px; }
+h3 { margin:0 0 7px; font-size:13px; line-height:1.2; font-weight:820; }
+p { margin:0; color:var(--muted); font-size:11.35px; line-height:1.48; }
+.note { margin-top:11px; border:1px solid rgba(62,99,255,.16); background:rgba(255,255,255,.62); border-radius:16px; padding:12px 14px; color:#4b5361; font-size:11.25px; line-height:1.46; }
+.mini-table { border-radius:18px; overflow:hidden; margin-top:8mm; }
+.row { display:grid; grid-template-columns:.54fr 1.46fr; } .row+.row{border-top:1px solid var(--line)}
+.cell { background:rgba(255,255,255,.43); color:var(--muted); font-size:10.75px; line-height:1.43; padding:9px 11px; } .cell:first-child{color:var(--ink);font-weight:800}
+.flow { display:grid; gap:8px; margin-top:8mm; }
+.step { display:grid; grid-template-columns:38px 1fr; gap:11px; align-items:center; border-radius:16px; padding:10px 12px; }
+.step-num { width:38px; height:38px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:#f0f3f9; border:1px solid rgba(20,25,34,.06); color:#687384; font-size:10.5px; font-weight:820; text-align:center; }
+.code { white-space:pre-wrap; word-break:break-word; margin:8mm 0 0; padding:12px; border-radius:14px; border:1px solid rgba(22,27,36,.08); background:rgba(22,27,36,.045); color:#283040; font-family:"SF Mono",Menlo,Consolas,monospace; font-size:8.5px; line-height:1.36; }
+.checklist { margin-top:8mm; display:grid; gap:8px; } .checklist div { border-radius:14px; padding:10px 12px; color:#4a5260; font-size:11.15px; line-height:1.38; }
+.footer { position:absolute; left:17mm; right:17mm; bottom:10mm; display:flex; justify-content:space-between; z-index:3; color:rgba(95,102,115,.62); font-size:9.4px; }
+strong, code { color:#222936; }
+</style></head><body><section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Recovery dossier - May 16, 2026</div></div>
+    <h1>AURA, rebuilt from memory.</h1>
+    
+<p class="lead">This is the current-state rebuild dossier for AURA. If the repo is lost, a developer or agent should be able to recreate the app, backend, voice pipeline, memory system, reminders, iOS build path, Mac-to-Mac IPA handoff, and launch roadmap from this document.</p>
+<div class="hero-grid">
+  <div>
+    <div class="quote">AURA is a voice-first AI life journal: it listens, remembers quietly, recalls by date, notices emotional continuity, sets reminders, and speaks back through a resilient voice chain.</div>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">Expo 52</div><div class="label">React Native 0.76.9 / JSC / New Architecture off</div></div>
+      <div class="stat"><div class="num">API :4000</div><div class="label">Express backend bound to 0.0.0.0 for iPhone LAN testing</div></div>
+      <div class="stat"><div class="num">Full Recall</div><div class="label">Raw archive, smart memories, summaries, emotional continuity</div></div>
+      <div class="stat"><div class="num">Scale Hooks</div><div class="label">Quota ledger, brain queue, Redis-ready global semaphore</div></div>
+    </div>
+  </div>
+  <div class="orb-shell"><span class="particle p1"></span><span class="particle p2"></span><span class="particle p3"></span><span class="particle p4"></span><div class="orb"><span></span></div></div>
+</div>
+
+  </div>
+  <div class="footer"><span>Recovery dossier - May 16, 2026</span><span>01</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Current product contract</div></div>
+    <h1>What AURA must do now.</h1>
+    
+<p class="lead">The current app is not just a front-end. The experience depends on a mobile voice state machine, a backend orchestration layer, deterministic memory storage, emotional continuity context, and reminder delivery that changes based on foreground/background state.</p>
+<div class="section-grid">
+<div class="card"><h3>Mobile shell</h3><p>Expo iOS app named <strong>AURA</strong>, bundle id <strong>ai.aura.journal.recall</strong>, portrait-only, minimal grey-white UI, hidden controls, tap-to-speak interaction.</p></div><div class="card"><h3>Backend brain</h3><p>Express API on <strong>0.0.0.0:4000</strong>. It owns STT, NVIDIA/OpenRouter replies, TTS, memory, recall, reminder parsing, check-ins, and provider key rotation.</p></div><div class="card"><h3>Voice loop</h3><p>Tap records. Tap again transcribes with Groq Whisper. NVIDIA or OpenRouter replies. Backend synthesizes Gemini or Pocket voice. iOS speech is the final device fallback.</p></div><div class="card"><h3>Memory promise</h3><p>Archive every user and assistant turn as historical truth. Extract smart memories and emotional signals separately. Exact dates appear only when the user wants exact recall.</p></div><div class="card"><h3>Reminder promise</h3><p>Reminder intent beats memory recall. Foreground app shows reminder text and speaks it. Background or closed app shows a normal AURA notification banner.</p></div><div class="card"><h3>Build promise</h3><p>A second Mac can run <code>npm install && npm run ipa:ios</code>. The build script regenerates iOS, validates permissions, patches Pods, and exports an unsigned IPA.</p></div></div>
+
+  </div>
+  <div class="footer"><span>Current product contract</span><span>02</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Repository map</div></div>
+    <h1>Recreate this folder first.</h1>
+    
+<p class="lead">The project is a root npm workspace with two apps. Keep the folder name unless deliberately creating a clone. This map names the files that define the current behavior.</p>
+<pre class="code">build-a-mobile-application-called-second/
+  package.json                         # npm workspaces + ipa:ios script
+  render.yaml                          # Render web service config
+  scripts/build-ios-ipa.sh              # Expo prebuild, Pods patching, Xcode archive/package
+  docs/AURA_Product_Memory_Vision.pdf   # this recovery dossier + future launch plan
+  scripts/aura-beta-chaos.mjs            # backend-only real-user chaos simulation
+  apps/api/
+    src/index.ts                        # Express server, CORS, /health, request logs
+    src/routes/capture.ts               # chat, memory, reminders, recall, TTS response
+    src/routes/voice.ts                 # /voice/transcribe and /voice/synthesize
+    src/routes/reminders.ts             # reminder listing/create/delete API
+    src/services/openRouter.ts          # NVIDIA/OpenRouter fallback, brain queue, embeddings
+    src/services/geminiVoice.ts         # Gemini TTS, then Pocket TTS fallback
+    src/services/pocketTts.ts           # kyutai-labs/pocket-tts via uvx, returned as PCM
+    src/services/conversationArchive.ts # exact raw archive and date recall
+    src/services/memoryStore.ts         # smart memories + session summaries
+    src/services/emotionalContinuity.ts # trends, restraint, relationships
+    src/services/reminderParser.ts      # natural time/check-in parsing
+    src/services/reminderStore.ts       # Supabase/local reminder persistence
+    src/services/brainOrchestrator.ts   # local queue + Redis-ready global semaphore
+    src/services/usageLedger.ts         # 100/day usage quota ledger
+    data/*.json                         # local fallback persistence when Supabase absent
+  apps/mobile/
+    app.json                            # bundle id, ATS/local network, mic, notifications
+    src/App.tsx                         # navigation, foreground reminders, idle finalize
+    src/screens/CaptureScreen.tsx       # tap/listen/think/reply screen
+    src/screens/TypeInsteadScreen.tsx   # typed chat path
+    src/lib/api.ts                      # API bridge + local fallback + provider headers
+    src/lib/audio.ts                    # PCM/WAV playback + loud iOS speech failsafe
+    src/lib/reminderScheduler.ts        # local notifications + due reminder cache</pre>
+<div class="note"><strong>Rule:</strong> keep secrets in <code>apps/api/.env</code> or host env vars. Do not hardcode API keys into mobile code or this document.</div>
+
+  </div>
+  <div class="footer"><span>Repository map</span><span>03</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Providers and environment</div></div>
+    <h1>The backend is the only place that should know provider keys.</h1>
+    
+<p class="lead">The IPA should call a backend URL. The backend then talks to Groq, OpenRouter, Gemini, Pocket TTS, and optionally Supabase. Provider keys rotate server-side or can be sent as user-provided headers later, but never compiled into the IPA.</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">STT</div><div class="cell">Groq Whisper, model <code>whisper-large-v3-turbo</code>, endpoint <code>POST /voice/transcribe</code>.</div></div>
+<div class="row"><div class="cell">LLM</div><div class="cell">Backend tries NVIDIA first for speed, then OpenRouter as backup. Current health shows NVIDIA <code>2</code> keys, OpenRouter <code>6</code> keys, NVIDIA primary <code>meta/llama-3.1-8b-instruct</code>, OpenRouter primary <code>qwen/qwen3-next-80b-a3b-instruct:free</code>.</div></div>
+  <div class="row"><div class="cell">Voice</div><div class="cell">Gemini TTS model <code>gemini-2.5-flash-preview-tts</code>, voice <code>Sulafat</code>; then Pocket TTS; then iOS local speech.</div></div>
+  <div class="row"><div class="cell">Memory</div><div class="cell">Supabase Postgres if configured. Local JSON fallback under <code>apps/api/data</code> if Supabase is absent.</div></div>
+  <div class="row"><div class="cell">Network</div><div class="cell">Local IPA testing uses <code>http://192.168.1.7:4000</code>. Backend must bind <code>0.0.0.0</code>; iPhone and Mac must share Wi-Fi.</div></div>
+</div>
+<pre class="code"># apps/api/.env shape
+PORT=4000
+HOST=0.0.0.0
+APP_ORIGIN=*
+OPENROUTER_API_KEYS=sk-or-v1-...,sk-or-v1-...
+OPENROUTER_MODEL=qwen/qwen3-next-80b-a3b-instruct:free
+OPENROUTER_FALLBACK_MODELS=openai/gpt-oss-20b:free,z-ai/glm-4.5-air:free
+NVIDIA_API_KEYS=nvapi-...,nvapi-...
+NVIDIA_MODEL=meta/llama-3.1-8b-instruct
+NVIDIA_FALLBACK_MODELS=meta/llama-3.3-70b-instruct,mistralai/mistral-small-4-119b-2603
+GROQ_API_KEY=gsk_...
+GROQ_TRANSCRIPTION_MODEL=whisper-large-v3-turbo
+GEMINI_API_KEYS=AIza...,AIza...
+GEMINI_TTS_MODEL=gemini-2.5-flash-preview-tts
+GEMINI_TTS_VOICE=Sulafat
+POCKET_TTS_ENABLED=true
+POCKET_TTS_COMMAND=uvx
+POCKET_TTS_COMMAND_ARGS=pocket-tts,generate
+POCKET_TTS_LANGUAGE=english
+POCKET_TTS_DEVICE=cpu
+POCKET_TTS_TIMEOUT_MS=14000
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=</pre>
+  </div>
+  <div class="footer"><span>Providers and environment</span><span>04</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Backend API contract</div></div>
+    <h1>The routes that make the app feel alive.</h1>
+    
+<p class="lead">The mobile app is intentionally thin. These routes are the behavior contract a rebuild must preserve.</p>
+<div class="flow">
+  <div class="step"><div class="step-num">01</div><div><h3>GET /health</h3><p>Returns service status and provider readiness for OpenRouter, Groq, Gemini/Pocket voice, memory persistence, and archive paths.</p></div></div>
+  <div class="step"><div class="step-num">02</div><div><h3>POST /voice/transcribe</h3><p>Receives multipart audio as <code>audio</code>. Logs file presence, MIME, size, transcript length. Returns transcript or clear failure.</p></div></div>
+  <div class="step"><div class="step-num">03</div><div><h3>POST /capture</h3><p>Main brain route. Saves user turn, detects reminders/check-ins, decides recall mode, builds memory context, calls OpenRouter, stores reply, returns text plus voice when available.</p></div></div>
+  <div class="step"><div class="step-num">04</div><div><h3>POST /voice/synthesize</h3><p>Reminder/standalone voice endpoint. Input <code>{ text }</code>. Output <code>{ voice }</code>. Voice may be Gemini, Pocket, or <code>null</code>; reminder creation must never fail because TTS failed.</p></div></div>
+  <div class="step"><div class="step-num">05</div><div><h3>GET /reminders</h3><p>Returns scheduled reminders/check-ins for the app UI and local cache. Mobile schedules iOS notifications from these reminders.</p></div></div>
+  <div class="step"><div class="step-num">06</div><div><h3>POST /memories/session/finalize</h3><p>Creates compact session summaries after idle gaps so long conversations are recallable without dumping every raw turn into normal prompts.</p></div></div>
+</div>
+<div class="note"><strong>Failure rule:</strong> OpenRouter/Gemini failures degrade gracefully. AURA should still create reminders, save archive turns, and produce deterministic responses for greetings/capability checks when possible.</div>
+
+  </div>
+  <div class="footer"><span>Backend API contract</span><span>05</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Voice pipeline</div></div>
+    <h1>How AURA hears and speaks.</h1>
+    
+<p class="lead">The voice path is the soul of the app. The rebuild must preserve the state order and the fallback chain.</p>
+<div class="flow">
+  <div class="step"><div class="step-num">Tap</div><div><h3>Start recording</h3><p>CaptureScreen records AAC/M4A using Expo AV. UI shows <strong>Listening</strong> in soft grey. If the user taps during playback, current audio stops and recording starts cleanly.</p></div></div>
+  <div class="step"><div class="step-num">Tap</div><div><h3>Stop and think</h3><p>Second tap stops recording, validates URI/file, uploads to <code>/voice/transcribe</code>, then sends transcript to <code>/capture</code>. UI shows <strong>Thinking</strong>.</p></div></div>
+  <div class="step"><div class="step-num">AI</div><div><h3>Reply text first-class</h3><p>When <code>/capture</code> returns, reply text appears on the background like a premium AURA reply. No card shape. No robotic transcript dump.</p></div></div>
+  <div class="step"><div class="step-num">TTS</div><div><h3>Voice starts as close to text as possible</h3><p>Normal replies use Gemini voice if returned. If missing or playback fails, mobile uses the same loud iOS speech helper as reminders.</p></div></div>
+</div>
+<div class="section-grid two">
+  <div class="card"><h3>Primary STT</h3><p>Groq Whisper via backend. This prevents mobile from needing provider keys and allows backend logging/retries.</p></div>
+  <div class="card"><h3>Normal voice fallback</h3><p>Mobile <code>speakTextWithFailsafe</code> chooses a clear installed iOS voice, volume <code>1</code>, <code>playsInSilentModeIOS</code>, and a timeout unlock so the app does not stay stuck in speaking state.</p></div>
+</div>
+
+  </div>
+  <div class="footer"><span>Voice pipeline</span><span>06</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Gemini -&gt; Pocket -&gt; iOS</div></div>
+    <h1>The current TTS resilience layer.</h1>
+    
+<p class="lead">Gemini TTS can hit quota/permission limits. The current live state shows Gemini voice keys cooling down, so Pocket TTS is now the working backend fallback before the phone ever falls back to iOS speech.</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">1. Gemini</div><div class="cell">Backend tries all active Gemini keys, with cooldown for 400/401/403/429. <code>/voice/synthesize</code> uses a fast race across active keys for reminders.</div></div>
+  <div class="row"><div class="cell">2. Pocket TTS</div><div class="cell">If Gemini cannot produce audio, backend runs <code>uvx pocket-tts generate</code>. It converts the resulting WAV into raw PCM when possible so current mobile playback handles it.</div></div>
+  <div class="row"><div class="cell">3. iOS speech</div><div class="cell">If Gemini and Pocket both fail, the app speaks locally through the loud shared iOS speech failsafe. It uses volume 1, rate 1.08, silent-mode playback, and the same helper for chat, Type Instead, and foreground reminders.</div></div>
+</div>
+<pre class="code">Reminder voice behavior:
+- app active: wait for backend voice until the end of the scheduled minute, max 59s
+- if backend voice arrives: set reminder text and play prepared audio together
+- if backend voice does not arrive by deadline: set text and speak with iOS fallback
+- mark delivered only after text is visible and voice attempt finishes
+
+Backend voice endpoint response:
+POST /voice/synthesize { &quot;text&quot;: &quot;Hey Rihan, time to drink water.&quot; }
+=&gt; { &quot;voice&quot;: { &quot;audioBase64&quot;: &quot;...&quot;, &quot;mimeType&quot;: &quot;audio/pcm;rate=24000&quot;, &quot;provider&quot;: &quot;pocket-tts&quot; } }
+=&gt; or { &quot;voice&quot;: null } when all backend TTS paths fail</pre>
+<div class="note"><strong>Important:</strong> Background/closed app voice is not promised. iOS notifications show a banner only. Custom notification audio is intentionally not required because it can break delivery.</div>
+
+  </div>
+  <div class="footer"><span>Gemini -&gt; Pocket -&gt; iOS</span><span>07</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Reminder and check-in system</div></div>
+    <h1>Foreground speaks. Background notifies.</h1>
+    
+<p class="lead">Reminders are split into deterministic creation, local notification scheduling, and foreground voice delivery. Reminder intent must always beat memory recall.</p>
+<div class="section-grid two">
+  <div class="card"><h3>Foreground/open app</h3><p>Every second, <code>App.tsx</code> checks cached due reminders. If the app is active and not recording/speaking, it prepares voice, switches home, shows the reminder as normal AURA text, haptics fire, then voice plays.</p></div>
+  <div class="card"><h3>Background/closed app</h3><p><code>expo-notifications</code> schedules a normal AURA text notification. No voice. When the app opens after a fired banner, <code>markDueNotificationRemindersHandled</code> prevents duplicate foreground voice spam.</p></div>
+  <div class="card"><h3>Check-ins</h3><p>“Ask me if I’m still smoking weed after 30 minutes” becomes a <code>check_in</code> reminder with a question and guidance. The answer is linked back and saved into memory.</p></div>
+  <div class="card"><h3>Stuck-speech protection</h3><p>If a previous reply leaves <code>voiceBusy</code> stuck, the stale unlock clears after 20 seconds so due reminders can still run.</p></div>
+</div>
+<pre class="code">Expected user flow:
+User: remind me to drink water after one minute
+AURA: Done, Rihan. I&#x27;ll remind you at 01:40. Please keep AURA open around then so I can speak it to you.
+
+At due time while app is open:
+Screen text: Hey Rihan, time to drink water.
+Voice: Gemini AURA voice -&gt; Pocket TTS -&gt; iOS fallback
+
+At due time while app is closed/backgrounded:
+Notification: AURA / Hey Rihan, time to drink water.
+No background voice promise.</pre>
+  </div>
+  <div class="footer"><span>Reminder and check-in system</span><span>08</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Memory architecture</div></div>
+    <h1>Reliable recall is the core magic.</h1>
+    
+<p class="lead">AURA has two layers: deterministic historical truth and derived intelligence. Never replace the archive with summaries. Summaries make recall fast; the archive keeps it honest.</p>
+<div class="flow">
+  <div class="step"><div class="step-num">Raw</div><div><h3>Conversation archive</h3><p>Every user transcript/text and every AURA reply is saved with exact timestamp, timezone, session id, input mode, role, and searchable text. This powers date-wise recall.</p></div></div>
+  <div class="step"><div class="step-num">Smart</div><div><h3>Smart memories</h3><p>After each useful turn, <code>memoryAnalyzer</code> extracts summary, emotion, topics, goals, action signals, importance, tags, and memory layer.</p></div></div>
+  <div class="step"><div class="step-num">Embed</div><div><h3>Recall vectors</h3><p>When configured, Gemini embeddings use <code>gemini-embedding-001</code> and 1536 dimensions. If unavailable, keyword/recency fallback still works.</p></div></div>
+  <div class="step"><div class="step-num">Idle</div><div><h3>Session summaries</h3><p>After roughly 5 minutes idle, mobile calls <code>/memories/session/finalize</code>. Backend summarizes recent archive turns into a session-summary memory.</p></div></div>
+</div>
+<div class="note"><strong>UX rule:</strong> normal chat saves silently. AURA says “I heard you. I saved this moment.” only when the user explicitly says save/remember/journal this.</div>
+
+  </div>
+  <div class="footer"><span>Memory architecture</span><span>09</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Recall modes</div></div>
+    <h1>Exact when asked, subtle by default.</h1>
+    
+<p class="lead">The major memory UX improvement is mode separation. AURA should not prove it remembers by dumping logs every turn.</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">Utility recall</div><div class="cell">Triggers on “what did I say”, “when did I”, “yesterday”, “last week”, “on May 14”, “show history”, exact timestamps, reminders, and explicit save commands.</div></div>
+  <div class="row"><div class="cell">Companion mode</div><div class="cell">Normal emotional conversation. AURA uses memory quietly: “You’ve seemed worn out lately,” not “You said tired on May 3, May 5...”</div></div>
+  <div class="row"><div class="cell">Archive answer</div><div class="cell">For date recall, <code>conversationArchive.ts</code> retrieves raw turns by date range/timezone and builds a clean answer hint. If no entries exist, AURA says so honestly.</div></div>
+  <div class="row"><div class="cell">Smart context</div><div class="cell">For normal replies, relevant smart memories, session summaries, emotional continuity, and theme scores are injected as quiet context, not visible logs.</div></div>
+</div>
+<pre class="code">Examples:
+“What did I say yesterday?” -&gt; utility mode, timestamped archive answer.
+“What did I say today about Swift?” -&gt; utility mode, filtered raw archive + summary.
+“I’m tired again.” -&gt; companion mode, maybe subtle continuity if repeated and cooldown allows.
+“Remember this: I want to focus on fitness.” -&gt; explicit save, one acknowledgement, smart memory.</pre>
+  </div>
+  <div class="footer"><span>Recall modes</span><span>10</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Emotional continuity layer</div></div>
+    <h1>Memory that feels human, not creepy.</h1>
+    
+<p class="lead">The emotional layer is derived context. It never overwrites historical archive truth. Its job is restraint, pattern awareness, and softer companion phrasing.</p>
+<div class="section-grid">
+<div class="card"><h3>Signals</h3><p>After capture, AURA detects soft labels like tired, stressed, sad, excited, calm, motivated, overwhelmed. Each signal has timestamp, confidence, topic, intensity, and source turn.</p></div><div class="card"><h3>Theme scores</h3><p>Repeated themes such as sleep, work, family, fitness, trading, money, study, relationship, loneliness, and goals gradually become more important.</p></div><div class="card"><h3>Relationships</h3><p>Lightweight person continuity tracks dad, mother, friend, girlfriend, cofounder-like mentions, tone, related topics, last seen, and recurrence.</p></div><div class="card"><h3>Evolution</h3><p>If the user says “I love trading” and later “I hate trading,” the archive keeps both. Companion mode treats the theme as changed or emotionally mixed.</p></div><div class="card"><h3>Restraint</h3><p>Cooldowns prevent AURA from mentioning the same pattern repeatedly. Low-confidence or sensitive patterns stay silent unless directly relevant.</p></div><div class="card"><h3>Natural phrasing</h3><p>Prompt context says: use continuity quietly, no timestamp dumps, no “I am analyzing your memory,” no forced therapy-bot behavior.</p></div></div>
+<div class="note"><strong>Goal:</strong> AURA should feel like a continuous presence that notices patterns over time, while still letting exact recall remain deterministic and trustworthy.</div>
+
+  </div>
+  <div class="footer"><span>Emotional continuity layer</span><span>11</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">UI and interaction contract</div></div>
+    <h1>Minimal, alive, and quiet.</h1>
+    
+<p class="lead">The approved direction is minimal grey-white, premium typography, hidden controls, and an alive orb/logo presence. The app should not feel like a dashboard.</p>
+<div class="section-grid two">
+  <div class="card"><h3>Launch</h3><p>Clean AURA waking screen: large spaced wordmark, WAKING, UP. It fades into the main screen without jump cuts.</p></div>
+  <div class="card"><h3>Home</h3><p>Soft grey-white background. AURA wordmark and floating orb/logo style. No permanent clutter. Hold/press reveals menu/type controls depending on current build behavior.</p></div>
+  <div class="card"><h3>Tap flow</h3><p>Tap starts listening. Tap again sends transcript to AURA. Thinking stays visible until reply is ready. Reply text appears directly on background.</p></div>
+  <div class="card"><h3>Controls</h3><p>Hamburger opens the drawer. Writing/type icon opens Type Instead. Drawer is now restyled to the same quiet grey-white AURA aesthetic instead of the older blue-heavy panel.</p></div>
+</div>
+<div class="note"><strong>Do not regress:</strong> fallback visuals must never show the old ugly SVG/orb or a grey rectangle under the orb. Drawer/menu surfaces should feel like soft frosted grey-white glass: muted icons, black/grey ΛURΛ wordmark, subtle dividers, no loud blue styling.</div>
+
+  </div>
+  <div class="footer"><span>UI and interaction contract</span><span>12</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">iOS networking and native config</div></div>
+    <h1>Why Safari can work while the app fails.</h1>
+    
+<p class="lead">Physical iPhone builds must not use localhost. Local HTTP requires iOS permissions and ATS allowances. The build script refuses to continue if required keys are missing from generated Info.plist.</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">API URL</div><div class="cell"><code>EXPO_PUBLIC_API_URL=http://192.168.1.7:4000</code> for local IPA tests. Safari health check must pass on the iPhone.</div></div>
+  <div class="row"><div class="cell">Backend bind</div><div class="cell"><code>app.listen(env.port, env.host)</code> with <code>HOST=0.0.0.0</code>, not localhost.</div></div>
+  <div class="row"><div class="cell">ATS</div><div class="cell"><code>NSAllowsLocalNetworking</code> or <code>NSAllowsArbitraryLoads</code> must exist in generated Info.plist for local HTTP.</div></div>
+  <div class="row"><div class="cell">Permissions</div><div class="cell">Microphone, local network, notification permissions are declared/requested. Notifications are only for banner delivery, not background voice.</div></div>
+</div>
+<pre class="code">Mac backend test:
+npm run dev --workspace apps/api
+curl http://127.0.0.1:4000/health
+curl http://192.168.1.7:4000/health
+
+Phone test:
+Open Safari on iPhone -&gt; http://192.168.1.7:4000/health
+Then launch AURA and test voice.</pre>
+  </div>
+  <div class="footer"><span>iOS networking and native config</span><span>13</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Build pipeline</div></div>
+    <h1>The IPA path that currently works.</h1>
+    
+<p class="lead">The iOS folder is regenerated before build. Do not trust stale <code>apps/mobile/ios</code>. The script applies local compatibility patches for React Native 0.76 on newer Xcode.</p>
+<div class="flow">
+  <div class="step"><div class="step-num">01</div><div><h3>Install dependencies</h3><p>Run from repo root. Node 20+ required.</p></div></div>
+  <div class="step"><div class="step-num">02</div><div><h3>Expo prebuild</h3><p><code>npx expo prebuild --platform ios --no-install</code>. The script checks Info.plist for local network/ATS.</p></div></div>
+  <div class="step"><div class="step-num">03</div><div><h3>Pods patch</h3><p>The script disables warning-as-error in third-party Pods, pins iOS deployment target, patches <code>fmt</code> consteval, and skips Hermes replacement for local unsigned IPA.</p></div></div>
+  <div class="step"><div class="step-num">04</div><div><h3>Xcode build</h3><p>Builds Release for iphoneos with code signing disabled, packages Payload into <code>AURA-unsigned-sideloadly.ipa</code>.</p></div></div>
+</div>
+<pre class="code">Clean target Mac before copy:
+cd ~/Downloads &amp;&amp; mkdir -p &quot;pre builds&quot; &amp;&amp; for x in build-a-mobile-application-called-second build-a-mobile-application-called-second.zip AURA-IPA-BUILD AURA build; do [ -e &quot;$x&quot; ] &amp;&amp; mv &quot;$x&quot; &quot;pre builds/${x}-$(date +%Y%m%d-%H%M%S)&quot;; done; rm -rf ~/Library/Developer/Xcode/DerivedData/AURA*; find ~/Library/Developer/Xcode/DerivedData -maxdepth 1 -name &#x27;*AURA*&#x27; -exec rm -rf {} +
+
+After copy/unzip on target Mac:
+cd ~/Downloads/build-a-mobile-application-called-second &amp;&amp; npm install &amp;&amp; npm run ipa:ios 2&gt;&amp;1 | tee aura-build.log
+
+Expected output:
+build/ios/AURA-unsigned-sideloadly.ipa</pre>
+  </div>
+  <div class="footer"><span>Build pipeline</span><span>14</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">AirDrop handoff skill</div></div>
+    <h1>How we move builds to TESSERACT.</h1>
+    
+<p class="lead">A local Codex skill now documents the Mac-to-Mac handoff ritual so future agents do not guess. It archives old zips/folders instead of deleting them.</p>
+<div class="section-grid two">
+  <div class="card"><h3>Skill path</h3><p><code>/Users/rihan/.codex/skills/aura-airdrop-ipa-handoff/SKILL.md</code></p></div>
+  <div class="card"><h3>Sender Mac</h3><p>Move old same-name zip/folder/build artifacts into <code>pre builds</code>, create a normal full zip with <code>ditto --keepParent</code>, then AirDrop to TESSERACT.</p></div>
+  <div class="card"><h3>Receiver Mac</h3><p>Before AirDrop, run the clean/archive one-liner in Downloads. After AirDrop, unzip the new zip, enter the project folder, and run the after-copy build command.</p></div>
+  <div class="card"><h3>Human checkpoints</h3><p>Wait for Rehan to confirm the right zip, AirDrop target, unzip result, and before pressing Enter on the target terminal when requested.</p></div>
+</div>
+<div class="note"><strong>Latest known handoff:</strong> a normal ~203.9 MB zip was AirDropped to TESSERACT. The target Mac ran <code>npm install && npm run ipa:ios</code>, Xcode finished with <code>** BUILD SUCCEEDED **</code>, and Finder revealed <code>~/Downloads/build-a-mobile-application-called-second/build/ios/AURA-unsigned-sideloadly.ipa</code>.</div>
+
+  </div>
+  <div class="footer"><span>AirDrop handoff skill</span><span>15</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Acceptance test matrix</div></div>
+    <h1>Use this before trusting a rebuild.</h1>
+    
+<p class="lead">AURA should pass these user-level scenarios after any rebuild. If one fails, fix that subsystem before adding features.</p>
+<div class="checklist">
+  <div><strong>Health:</strong> Mac and iPhone Safari both open <code>http://192.168.1.7:4000/health</code>. Health shows OpenRouter/Groq/Gemini/memory/archive status.</div>
+  <div><strong>Voice chat:</strong> tap -> Listening; tap -> Thinking; transcript reaches backend; reply text appears; Gemini/Pocket/iOS voice plays.</div>
+  <div><strong>Type Instead:</strong> typed message reaches <code>/capture</code>, reply text appears, fallback voice uses the same loud helper.</div>
+  <div><strong>Memory:</strong> say “my goal is to learn Swift this month”; ask “what did I say today about Swift?”; AURA recalls from archive with date context.</div>
+  <div><strong>Silent save:</strong> normal chat does not spam “saved.” Explicit “remember this” gives one clean acknowledgement.</div>
+  <div><strong>Emotional continuity:</strong> repeated tired/stress messages produce subtle wording like “you’ve seemed worn out lately,” not timestamp dumps.</div>
+  <div><strong>Reminder foreground:</strong> “remind me to drink water after one minute,” keep app open. At due time, text appears, haptic fires, voice plays Gemini/Pocket/iOS, no banner.</div>
+  <div><strong>Reminder background:</strong> set a reminder, background/close app. Normal AURA notification banner appears on time. No background voice is expected.</div>
+  <div><strong>Check-in:</strong> “ask me if I’m still smoking weed after one minute,” answer yes/no, AURA responds supportively and saves result.</div>
+</div>
+
+  </div>
+  <div class="footer"><span>Acceptance test matrix</span><span>16</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Failure diagnostics</div></div>
+    <h1>When something breaks, start here.</h1>
+    
+<p class="lead">Most failures fall into four buckets: provider quota, LAN networking, stale mobile cache/state, or iOS notification/voice behavior.</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">Network request failed</div><div class="cell">Check backend is running on <code>0.0.0.0:4000</code>, phone is same Wi-Fi, Safari health works, and generated Info.plist allows local networking.</div></div>
+  <div class="row"><div class="cell">“AURA brain” failure</div><div class="cell">Usually OpenRouter key/model exhaustion. Add/rotate <code>OPENROUTER_API_KEYS</code>, use the free model route, restart backend, verify health key count.</div></div>
+  <div class="row"><div class="cell">No Gemini voice</div><div class="cell">Gemini TTS quota/permission may be exhausted. Backend should fall to Pocket TTS. If Pocket also fails, mobile iOS fallback should speak loudly via volume 1 and rate 1.08.</div></div>
+  <div class="row"><div class="cell">Reminder created but silent</div><div class="cell">Check Xcode logs for <code>[AURA reminders]</code>: due reminder found, preparing voice, visible text set, provider used, fallback used, delivered.</div></div>
+  <div class="row"><div class="cell">Foreground duplicate after banner</div><div class="cell"><code>markDueNotificationRemindersHandled</code> should mark reminders delivered when the app opens after a fired iOS notification.</div></div>
+  <div class="row"><div class="cell">Robotic recall</div><div class="cell">Verify recall mode: exact timestamps only in utility recall. Companion mode must use continuity context quietly.</div></div>
+</div>
+<pre class="code">Useful commands:
+screen -ls | grep aura-api
+lsof -nP -iTCP:4000 -sTCP:LISTEN
+curl http://127.0.0.1:4000/health | python3 -m json.tool
+curl http://192.168.1.7:4000/health | python3 -m json.tool
+npm run typecheck --workspace apps/mobile
+npm run build --workspace apps/api
+npm run beta:chaos
+npm run beta:scale -- --stage=1 --users=10 --messages=5
+npm run ipa:ios 2&gt;&amp;1 | tee aura-build.log</pre>
+  </div>
+  <div class="footer"><span>Failure diagnostics</span><span>17</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Rebuild recipe</div></div>
+    <h1>From zero folder to current AURA.</h1>
+    
+<p class="lead">This is the shortest faithful path back to the current state.</p>
+<div class="flow">
+  <div class="step"><div class="step-num">1</div><div><h3>Create workspace</h3><p>Root npm workspace with <code>apps/api</code> and <code>apps/mobile</code>. Use Node 20+, TypeScript, Expo SDK 52, RN 0.76.9, JSC, New Architecture disabled.</p></div></div>
+  <div class="step"><div class="step-num">2</div><div><h3>Build backend</h3><p>Express with CORS/logging, <code>/health</code>, <code>/capture</code>, <code>/voice/transcribe</code>, <code>/voice/synthesize</code>, <code>/reminders</code>, <code>/memories/session/finalize</code>.</p></div></div>
+  <div class="step"><div class="step-num">3</div><div><h3>Add memory truth</h3><p>Raw archive first, then smart memory extraction, embeddings, session summaries, date recall, companion/utility recall decision, emotional continuity as derived context.</p></div></div>
+  <div class="step"><div class="step-num">4</div><div><h3>Add voice resilience</h3><p>Groq STT, OpenRouter replies, Gemini TTS, Pocket TTS PCM fallback, iOS speech failsafe. Treat empty/generic LLM replies as retry/failure.</p></div></div>
+  <div class="step"><div class="step-num">5</div><div><h3>Add reminders</h3><p>Parse natural reminders/check-ins server-side. Store reminders. Mobile schedules iOS banners and runs foreground voice delivery loop every second.</p></div></div>
+  <div class="step"><div class="step-num">6</div><div><h3>Ship iOS</h3><p>Configure ATS/local network/mic/notifications. Regenerate iOS on every IPA build. Patch Pods for Xcode 26/RN 0.76. Export unsigned IPA for Sideloadly.</p></div></div>
+</div>
+<div class="note"><strong>North star:</strong> AURA should feel less like a chatbot with logs and more like a continuous presence that quietly understands patterns over time.</div>
+
+  </div>
+  <div class="footer"><span>Rebuild recipe</span><span>18</span></div>
+</section><section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Latest backend beta - May 16, 2026</div></div>
+    <h1>The backend-only real-user chaos test passed 35/35.</h1>
+    <p class="lead">AURA now has a repeatable backend beta test that behaves like a messy real user without touching Rehan's real memories. It sends generated voice through Groq STT, runs direct capture calls for interruptions and partial thoughts, forces controlled failures, and verifies memory, reminders, recall, emotional continuity, and voice fallback behavior.</p>
+    <div class="mini-table">
+      <div class="row"><div class="cell">Run id</div><div class="cell"><code>aura-beta-chaos-1778901320300</code>, isolated user id. Reports saved to <code>/tmp/aura-beta-chaos/report.json</code> and <code>/tmp/aura-beta-chaos/summary.md</code>.</div></div>
+      <div class="row"><div class="cell">Score</div><div class="cell"><strong>35/35 passed</strong>. Average latency <code>6855ms</code>, max latency <code>12057ms</code>, over-25s timeout risk <code>0</code>.</div></div>
+      <div class="row"><div class="cell">Voice split</div><div class="cell">Pocket TTS returned audio in <code>33</code> cases. The only <code>none</code> voice cases were intentional chaos paths: simulated empty STT and forced all-backend-voice failure.</div></div>
+      <div class="row"><div class="cell">Quality gates</div><div class="cell">Reminder quality <code>7/7</code>, recall quality <code>7/7</code>, emotional continuity quality <code>6/6</code>. No unexpected “couldn't connect to brain” fallback appeared.</div></div>
+      <div class="row"><div class="cell">What changed</div><div class="cell">Added <code>npm run beta:chaos</code>, dev-only chaos headers for <code>aura-beta-chaos-*</code> users, beta-only test timestamps, fast deterministic relationship recall, and shorter voice text for Pocket TTS reliability.</div></div>
+    </div>
+    <pre class="code">Current intended voice chain:
+Normal chat: Gemini TTS -> Pocket TTS -> iOS speech
+Foreground reminder: Gemini TTS -> Pocket TTS -> iOS speech
+Background/closed reminder: normal AURA text notification only
+
+Backend beta command:
+npm run beta:chaos
+
+Test coverage:
+- generated WAV voice -> /voice/transcribe -> /capture -> memory/reminders/voice
+- direct capture for interruptions, partial STT, rapid-fire messages
+- forced brain failure, Gemini failure, Pocket failure, empty STT, memory delay
+- date recall, relationship recall, reminder recall, explicit-save recall
+- companion emotional continuity without timestamp spam</pre>
+    <div class="note"><strong>Important:</strong> These chaos controls are local/dev-only. They activate only for isolated <code>aura-beta-chaos-*</code> users with explicit <code>x-aura-chaos</code> headers, so normal app usage is not affected.</div>
+  </div>
+  <div class="footer"><span>Latest backend beta</span><span>19</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Production readiness - May 16, 2026</div></div>
+    <h1>What is ready now, and what is still local.</h1>
+    <p class="lead">The current repo is no longer just a prototype folder. It now has production-readiness hooks: quota accounting, brain queue metrics, scale runners, provider fallback, and health visibility. But it still runs as a local Mac backend until Supabase, Redis, and public HTTPS are connected.</p>
+    <div class="section-grid">
+      <div class="card"><h3>Ready in code</h3><p><code>/capture</code>, <code>/voice</code>, <code>/reminders</code>, <code>/usage</code>, <code>/brain/metrics</code>, <code>/health</code>, memory archive, emotional continuity, reminder parsing, and TTS fallback are implemented.</p></div>
+      <div class="card"><h3>Daily quota</h3><p><code>DAILY_MESSAGE_LIMIT=100</code> is wired through a usage ledger. Local fallback writes to <code>apps/api/data/daily-usage.json</code>; Supabase uses <code>increment_daily_usage</code>.</p></div>
+      <div class="card"><h3>Brain queue</h3><p>Local beta uses <code>BRAIN_MAX_CONCURRENCY=5</code>. Production can set <code>BRAIN_GLOBAL_MAX_CONCURRENCY=50</code> and <code>REDIS_URL</code> for cross-server semaphores.</p></div>
+      <div class="card"><h3>Scale tests</h3><p><code>beta:chaos</code>, <code>beta:concurrent</code>, <code>beta:brain-burst</code>, <code>beta:interrupt-storm</code>, <code>beta:scale</code>, and <code>beta:real-user</code> exist to test memory, reminders, voice, queues, Brain Lab routing, replay, and no-voice structure load.</p></div>
+      <div class="card"><h3>Current backend</h3><p>Runs on the Mac at <code>0.0.0.0:4000</code>. A detached <code>screen</code> session named <code>aura-api</code> can keep it alive for phone testing.</p></div>
+      <div class="card"><h3>Not production yet</h3><p>No public HTTPS URL, no live Supabase project, no Redis service, no production VPS, no App Store/TestFlight backend URL, and no real user account/privacy controls yet.</p></div>
+    </div>
+    <pre class="code">Production readiness knobs now recognized by the backend:
+AURA_ENV=beta|production
+DAILY_MESSAGE_LIMIT=100
+BRAIN_MAX_CONCURRENCY=5
+BRAIN_GLOBAL_MAX_CONCURRENCY=50      # production target
+BRAIN_QUEUE_MAX_DEPTH=500            # production target
+BRAIN_QUEUE_WAIT_MS=18000
+BRAIN_JOB_TIMEOUT_MS=20000
+REDIS_URL=redis://...                # required for multi-server global queue
+REDIS_KEY_PREFIX=aura
+SUPABASE_URL=https://...
+SUPABASE_SERVICE_ROLE_KEY=...</pre>
+  </div>
+  <div class="footer"><span>Production readiness</span><span>20</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Future vision</div></div>
+    <h1>How AURA launches from 1 user to 1,000 users.</h1>
+    <p class="lead">AURA should not jump from a Mac backend directly to public launch. The right path is controlled: personal testing, private alpha, always-on beta, then TestFlight/App Store with cost controls.</p>
+    <div class="flow">
+      <div class="step"><div class="step-num">0</div><div><h3>Now: personal Mac beta</h3><p>Keep using the installed IPA against the Mac backend. Validate voice, memory, reminders, recall, and emotional continuity daily. This is free-ish but requires the Mac online.</p></div></div>
+      <div class="step"><div class="step-num">1</div><div><h3>Private remote alpha</h3><p>Create Supabase, deploy backend behind HTTPS, set provider keys as server env vars, rebuild IPA to call the public API. Keep users to Rehan and 2-5 trusted testers.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div><h3>Always-on beta</h3><p>Move API to a VPS/Oracle-style always-on machine. Install Node, Pocket TTS runtime, PM2/systemd, Caddy/Nginx HTTPS, log rotation, and uptime monitor.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div><h3>50-concurrent day-1 backend</h3><p>Add Redis and set <code>BRAIN_GLOBAL_MAX_CONCURRENCY=50</code>. API nodes stay stateless; brain and TTS workers scale separately. Reminders and deterministic recall bypass LLM whenever possible.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div><h3>1,000-user launch</h3><p>Use low-cost paid brain models, Pocket voice by default, capped Gemini premium voice, Supabase for all memory, Redis queue, per-user quota, cost dashboard, and graceful fallback.</p></div></div>
+    </div>
+    <div class="note"><strong>Operating rule:</strong> launch only when AURA can survive backend restarts, provider quota failures, reminder bursts, and memory recall without cross-user leakage.</div>
+  </div>
+  <div class="footer"><span>Future vision: 1 to 1,000</span><span>21</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Scale and revenue model</div></div>
+    <h1>How AURA operates at 1,000 and then 10,000 users.</h1>
+    <p class="lead">The subscription idea is <strong>$15/month</strong> with <strong>100 user messages/day</strong>. The product must control AI usage so revenue covers LLM, STT, TTS, memory storage, and infrastructure.</p>
+    <div class="mini-table">
+      <div class="row"><div class="cell">Core assumption</div><div class="cell">100 user turns/day means about 3,000 LLM calls per user/month. Average context target is around 1,200 input tokens and 150 output tokens per reply.</div></div>
+      <div class="row"><div class="cell">Recommended voice mix</div><div class="cell">Pocket TTS primary, Gemini premium voice capped around 25% of replies, iOS speech emergency only. Gemini voice for every reply hurts margin.</div></div>
+      <div class="row"><div class="cell">1,000 users</div><div class="cell">Expected API cost about <strong>$3.6k-$4.0k/month</strong>, infra about <strong>$600-$900/month</strong>, total about <strong>$4.2k-$4.9k/month</strong>. Gross revenue is <strong>$15k/month</strong>.</div></div>
+      <div class="row"><div class="cell">10,000 users</div><div class="cell">Expected API cost about <strong>$36k-$40k/month</strong>, infra about <strong>$4k-$7k/month</strong>, total about <strong>$40k-$47k/month</strong>. Gross revenue is <strong>$150k/month</strong>.</div></div>
+      <div class="row"><div class="cell">Scaling strategy</div><div class="cell">Do not scale as one giant server. Split API nodes, brain workers, TTS workers, background memory jobs, Redis queues, and Supabase separately. Autoscale by queue depth and provider latency.</div></div>
+      <div class="row"><div class="cell">Hard guardrail</div><div class="cell">Do not sell unlimited AURA at $15. Enforce 100 turns/day, track cost per user, and degrade heavy users to cheaper models/Pocket voice/summarized responses before margin breaks.</div></div>
+    </div>
+    <pre class="code">Recommended production architecture:
+iOS App -> Cloudflare/WAF -> Load Balancer -> Stateless API Nodes
+API -> Redis queues + global brain semaphore
+API -> Supabase Postgres + pgvector
+Brain Queue -> LLM workers, max 50 active at day-1
+Voice Queue -> Pocket/Gemini TTS workers
+Background Workers -> summaries, embeddings, cleanup, analytics
+Observability -> logs, metrics, alerts, cost dashboard</pre>
+  </div>
+  <div class="footer"><span>Scale and revenue model</span><span>22</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Launch checklist</div></div>
+    <h1>The remaining work before real users.</h1>
+    <p class="lead">The repo is ready for serious beta hardening, but the public launch requires external infrastructure and trust work. This is the decision-complete checklist for the next operator or agent.</p>
+    <div class="checklist">
+      <div><strong>1. Supabase production:</strong> apply schema, verify <code>memories</code>, <code>conversation_turns</code>, <code>reminders</code>, <code>daily_usage</code>, emotional continuity tables, backups, export/delete plan.</div>
+      <div><strong>2. Redis:</strong> provision Redis, set <code>REDIS_URL</code>, set <code>BRAIN_GLOBAL_MAX_CONCURRENCY=50</code>, verify <code>/brain/metrics</code> shows Redis global semaphore.</div>
+      <div><strong>3. Public backend:</strong> deploy Node API to VPS/VM with HTTPS, env vars, PM2/systemd, log rotation, health checks, and Pocket TTS runtime.</div>
+      <div><strong>4. IPA/TestFlight:</strong> rebuild app with public HTTPS API URL, verify STT, chat, reply voice, reminders, memory recall, foreground/background behavior.</div>
+      <div><strong>5. Operations:</strong> add alerts for backend down, Supabase unreachable, Redis unreachable, all LLM keys cooling, Gemini/Pocket failures, reminder failures, and queue saturation.</div>
+      <div><strong>6. Product trust:</strong> add privacy policy, support email, memory pause/delete/export controls, clear consent that AURA saves conversations to remember.</div>
+      <div><strong>7. Beta limits:</strong> start with 3-5 active testers, then 25, then 100. Do not open 1,000 users until scale tests pass with Redis/Supabase on real infra.</div>
+    </div>
+    <div class="note"><strong>Final north star:</strong> AURA should feel like a continuous presence with a real memory, not a chatbot proving it has logs. Reliability, restraint, and trust matter more than raw feature count.</div>
+  </div>
+  <div class="footer"><span>Launch checklist</span><span>23</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Brain Lab - May 16, 2026</div></div>
+    <h1>The eval system now protects intelligence, scale, and cost.</h1>
+    <p class="lead">AURA now has a cost-safe backend evaluation framework called <strong>Brain Lab</strong>. It tests conversation quality, memory routing, cross-user isolation, drift, latency, queue behavior, and cost risk without turning every simulated message into a paid LLM call.</p>
+    <div class="section-grid">
+      <div class="card"><h3>Single-user intelligence</h3><p><code>npm run beta:real-user -- --stage=single</code> runs one evolving 40-message user audit. Latest pass: router accuracy <strong>97.78%</strong>, recall score <strong>100%</strong>, drift <strong>0%</strong>, cross-user leaks <strong>0</strong>.</p></div>
+      <div class="card"><h3>100-user mixed mode</h3><p><code>--stage=100 --mode=mixed --real-users=15 --llm-max-calls=600</code> samples only selected users and critical paths. It tests distribution without a 4,000-call cost explosion.</p></div>
+      <div class="card"><h3>1000-user structure mode</h3><p><code>--stage=1000 --mode=structure</code> makes zero LLM, STT, TTS, or external embedding calls. It tests routing, memory writes, reminder logic, queue stability, CPU/RAM, and leakage.</p></div>
+      <div class="card"><h3>Sampled scale intelligence</h3><p><code>--stage=1000 --mode=sampled --critical-only=true --llm-max-calls=300</code> validates a tiny critical-path brain sample under load while keeping provider cost bounded.</p></div>
+      <div class="card"><h3>Replay cache</h3><p><code>--replay-cache=write/read</code> stores normalized replies and replays them for mock users. This makes regression runs repeatable and debuggable.</p></div>
+      <div class="card"><h3>Failure injection</h3><p><code>--failure-profile=light|medium|heavy</code> uses test-only chaos headers to inject brain delay, brain failure, and memory delay for fake users only.</p></div>
+    </div>
+    <pre class="code">Brain Lab commands:
+npm run beta:real-user -- --stage=single
+npm run beta:real-user -- --stage=100 --mode=mixed --real-users=15 --llm-max-calls=600 --replay-cache=write
+npm run beta:real-user -- --stage=100 --mode=mixed --real-users=15 --llm-max-calls=600 --replay-cache=read
+npm run beta:real-user -- --stage=1000 --mode=structure
+npm run beta:real-user -- --stage=1000 --mode=sampled --critical-only=true --llm-max-calls=300
+npm run beta:real-user -- --stage=100 --mode=mixed --failure-profile=medium --llm-max-calls=300
+
+Smoke verification completed:
+- 100 mixed: pass, 2 real calls / 18 theoretical, voice jobs 0
+- replay read: pass, 31 hits / 0 misses
+- 1000 structure: pass, 0 real LLM calls, voice jobs 0
+- failure injection: pass, degradation shape smooth slowdown</pre>
+    <div class="note"><strong>Safety rule:</strong> real-call caps are the source of truth. Percent sampling only decides which requests are eligible. Any cross-user leak, backend crash, queue explosion, voice job during no-voice mode, or LLM calls above cap is a hard fail.</div>
+  </div>
+  <div class="footer"><span>AURA Brain Lab</span><span>24</span></div>
+</section>
+</body></html>

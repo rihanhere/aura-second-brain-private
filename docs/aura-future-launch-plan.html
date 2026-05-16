@@ -1,0 +1,335 @@
+<!doctype html><html><head><meta charset="utf-8"><title>AURA Future Launch Plan</title><style>
+@page { size: A4; margin: 0; }
+:root { --bg:#f8f9fb; --paper:#fbfcfe; --ink:#11151d; --muted:#657083; --soft:#8b94a6; --line:rgba(25,32,46,.10); --blue:#3e63ff; --blue2:#7fc9ff; --card:rgba(255,255,255,.64); }
+* { box-sizing:border-box; }
+body { margin:0; background:#e7ebf2; color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",Arial,sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.page { width:210mm; height:297mm; position:relative; overflow:hidden; page-break-after:always; background: radial-gradient(circle at 50% -8%, #fff 0, #fcfdff 31%, var(--bg) 100%); }
+.grain { position:absolute; inset:0; opacity:.55; background-image: radial-gradient(circle at 14% 8%, rgba(62,99,255,.035), transparent 23%), radial-gradient(circle at 82% 78%, rgba(127,201,255,.075), transparent 28%), linear-gradient(135deg, rgba(255,255,255,.38), rgba(225,230,238,.18)); }
+.content { position:relative; z-index:2; padding:17mm 17mm 18mm; height:100%; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12mm; }
+.brand { font-size:15px; letter-spacing:.58em; font-weight:300; color:#101216; }
+.pill { border:1px solid var(--line); border-radius:999px; padding:7px 11px; background:rgba(255,255,255,.58); color:var(--soft); font-size:10px; font-weight:750; text-transform:uppercase; letter-spacing:.08em; }
+h1 { margin:0 0 7mm; max-width:164mm; font-size:33px; line-height:1.03; letter-spacing:-.85px; font-weight:770; }
+.lead { max-width:166mm; margin:0 0 8mm; color:var(--muted); font-size:14px; line-height:1.54; }
+.hero-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:11mm; align-items:center; margin-top:8mm; }
+.quote { font-size:24px; line-height:1.22; font-weight:530; letter-spacing:-.25px; color:#202631; margin:0 0 10mm; }
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.stat, .card, .step, .mini-table, .checklist div { border:1px solid var(--line); background:var(--card); backdrop-filter: blur(18px); box-shadow:0 18px 45px rgba(40,55,95,.055); }
+.stat { border-radius:18px; padding:12px; min-height:73px; }
+.num { font-size:18px; font-weight:790; color:#1f2633; }
+.label { color:var(--soft); font-size:10.8px; line-height:1.35; margin-top:5px; }
+.orb-shell { min-height:335px; display:flex; align-items:center; justify-content:center; position:relative; }
+.orb { width:282px; height:282px; border-radius:44% 56% 54% 46%/47% 43% 57% 53%; opacity:.95; filter:drop-shadow(0 42px 72px rgba(69,104,190,.13)); background:radial-gradient(circle at 56% 54%,rgba(255,255,255,.98) 0 3%,transparent 5%),radial-gradient(circle at 58% 48%,rgba(205,243,255,.82),transparent 18%),radial-gradient(circle at 42% 45%,rgba(43,82,255,.88),transparent 35%),radial-gradient(circle at 68% 66%,rgba(28,91,242,.62),transparent 25%),conic-gradient(from 210deg,rgba(255,255,255,.82),rgba(183,234,255,.30),rgba(75,112,255,.58),rgba(255,255,255,.78)); position:relative; }
+.orb span { position:absolute; inset:10%; border-radius:inherit; background:linear-gradient(145deg, rgba(255,255,255,.52), transparent 38%, rgba(255,255,255,.32) 62%, transparent); filter:blur(2px); }
+.particle { position:absolute; width:6px; height:6px; border-radius:999px; background:rgba(76,111,255,.50); box-shadow:0 0 16px rgba(76,111,255,.22); } .p1{left:45px;top:105px}.p2{right:55px;top:95px;width:8px;height:8px}.p3{left:80px;bottom:82px;width:5px;height:5px}.p4{right:105px;bottom:68px}
+.section-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:8mm; } .section-grid.two{grid-template-columns:1fr 1fr;}
+.card { border-radius:18px; padding:14px; min-height:111px; }
+h3 { margin:0 0 7px; font-size:13px; line-height:1.2; font-weight:820; }
+p { margin:0; color:var(--muted); font-size:11.35px; line-height:1.48; }
+.note { margin-top:11px; border:1px solid rgba(62,99,255,.16); background:rgba(255,255,255,.62); border-radius:16px; padding:12px 14px; color:#4b5361; font-size:11.25px; line-height:1.46; }
+.mini-table { border-radius:18px; overflow:hidden; margin-top:8mm; }
+.row { display:grid; grid-template-columns:.54fr 1.46fr; } .row+.row{border-top:1px solid var(--line)}
+.cell { background:rgba(255,255,255,.43); color:var(--muted); font-size:10.75px; line-height:1.43; padding:9px 11px; } .cell:first-child{color:var(--ink);font-weight:800}
+.flow { display:grid; gap:8px; margin-top:8mm; }
+.step { display:grid; grid-template-columns:38px 1fr; gap:11px; align-items:center; border-radius:16px; padding:10px 12px; }
+.step-num { width:38px; height:38px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:#f0f3f9; border:1px solid rgba(20,25,34,.06); color:#687384; font-size:10.5px; font-weight:820; text-align:center; }
+.code { white-space:pre-wrap; word-break:break-word; margin:8mm 0 0; padding:12px; border-radius:14px; border:1px solid rgba(22,27,36,.08); background:rgba(22,27,36,.045); color:#283040; font-family:"SF Mono",Menlo,Consolas,monospace; font-size:8.5px; line-height:1.36; }
+.checklist { margin-top:8mm; display:grid; gap:8px; } .checklist div { border-radius:14px; padding:10px 12px; color:#4a5260; font-size:11.15px; line-height:1.38; }
+.refs { margin-top:12mm; display:grid; gap:8px; color:#687384; font-size:10.8px; line-height:1.45; }
+.footer { position:absolute; left:17mm; right:17mm; bottom:10mm; display:flex; justify-content:space-between; z-index:3; color:rgba(95,102,115,.62); font-size:9.4px; }
+strong, code { color:#222936; }
+</style></head><body><section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Future launch plan - May 16, 2026</div></div>
+    <h1>AURA beyond the Mac.</h1>
+    
+<p class="lead">This document explains how AURA moves from a Mac-hosted prototype into a real user app: public backend, persistent memory, voice infrastructure, TestFlight, App Store, privacy, costs, and operations.</p>
+<div class="hero-grid">
+  <div>
+    <div class="quote">The prototype proved the feeling: AURA can listen, remember, recall, remind, and speak. The launch plan turns that feeling into infrastructure people can trust.</div>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">Now</div><div class="label">Mac backend for fast iteration</div></div>
+      <div class="stat"><div class="num">Alpha</div><div class="label">Public HTTPS backend + Supabase memory</div></div>
+      <div class="stat"><div class="num">Beta</div><div class="label">Always-on VM or VPS for Pocket TTS</div></div>
+      <div class="stat"><div class="num">Launch</div><div class="label">TestFlight, App Store, billing, privacy</div></div>
+    </div>
+  </div>
+  <div class="orb-shell"><span class="particle p1"></span><span class="particle p2"></span><span class="particle p3"></span><span class="particle p4"></span><div class="orb"><span></span></div></div>
+</div>
+
+  </div>
+  <div class="footer"><span>Future launch plan - May 16, 2026</span><span>01</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Current stage</div></div>
+    <h1>What exists today.</h1>
+    
+<p class="lead">AURA currently works as a personal prototype: iPhone app installed locally, backend running on the Mac, and the phone calls the LAN URL. That is perfect for building fast, but not shippable to users.</p>
+<div class="section-grid">
+<div class="card"><h3>Mobile app</h3><p>Expo/React Native iOS app with tap-to-speak, Type Instead, reminders, local notification scheduling, minimal AURA UI, and current bundle id <strong>ai.aura.journal.recall</strong>.</p></div><div class="card"><h3>Mac backend</h3><p>Express API on <strong>0.0.0.0:4000</strong>. It handles Groq STT, OpenRouter replies, Gemini/Pocket/iOS voice chain, memory, reminders, and emotional continuity.</p></div><div class="card"><h3>Memory</h3><p>Raw archive, smart memories, session summaries, emotional signals, theme scores, relationship continuity, exact date recall, and local-file fallback are already built.</p></div><div class="card"><h3>Voice</h3><p>Gemini TTS is premium. Pocket TTS now works as quota-safe fallback. iOS speech is emergency fallback only.</p></div><div class="card"><h3>Reminders</h3><p>Foreground reminders speak and show text. Background/closed app gets normal AURA text notifications.</p></div><div class="card"><h3>Limitation</h3><p>Everything depends on the Mac being online and on the same network. Users cannot rely on <code>192.168.1.7</code>.</p></div></div>
+<div class="note"><strong>Decision:</strong> keep the Mac backend for now because it is fast, controllable, and cheap while the product feel is still being shaped.</div>
+
+  </div>
+  <div class="footer"><span>Current stage</span><span>02</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Launch architecture</div></div>
+    <h1>The real app shape.</h1>
+    
+<p class="lead">AURA needs a public HTTPS backend URL, a durable database, secure secrets, and enough compute to run the orchestration layer without the Mac.</p>
+<div class="flow">
+<div class="step"><div class="step-num">01</div><div><h3>iPhone app</h3><p>The IPA/App Store app should call <code>https://api.aura...</code>, not a LAN IP. Later, remote config should let the app learn a backend URL without a rebuild.</p></div></div><div class="step"><div class="step-num">02</div><div><h3>Backend API</h3><p>The Node/Express API remains the orchestration brain: STT, LLM, TTS, memory, reminders, provider health, rate limits, and user/account logic.</p></div></div><div class="step"><div class="step-num">03</div><div><h3>Database</h3><p>Supabase Postgres stores raw conversation archive, smart memories, reminders, check-ins, emotional signals, theme scores, and relationship continuity.</p></div></div><div class="step"><div class="step-num">04</div><div><h3>Provider layer</h3><p>Groq, OpenRouter, Gemini, Pocket TTS, and future providers remain behind the backend. Secrets never ship inside the IPA.</p></div></div><div class="step"><div class="step-num">05</div><div><h3>Observability</h3><p>Every critical path needs logs and health metrics: STT, LLM, voice provider used, reminder delivery, memory writes, and fallback frequency.</p></div></div></div>
+<pre class="code">Production target request path:
+AURA iOS app
+  -&gt; HTTPS API gateway / Express backend
+  -&gt; Groq Whisper for transcription
+  -&gt; OpenRouter for reasoning
+  -&gt; Gemini TTS, Pocket TTS, or iOS fallback
+  -&gt; Supabase Postgres for memory + reminders
+  -&gt; app receives reply text + optional voice audio</pre>
+  </div>
+  <div class="footer"><span>Launch architecture</span><span>03</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Hosting options</div></div>
+    <h1>What to use when.</h1>
+    
+<p class="lead">The hardest requirement is not “host a Node API.” The hard part is “host a Node API that can also do audio, memory, and Pocket TTS reliably without charging too early.”</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">Mac now</div><div class="cell">Best for daily iteration. Zero deployment friction. Bad for users because the Mac and Wi-Fi must stay online.</div></div>
+  <div class="row"><div class="cell">Render Free</div><div class="cell">Easy deploy and existing <code>render.yaml</code>. Free web services sleep after idle and filesystem is ephemeral, so Supabase is required. Pocket TTS may be slow/unreliable.</div></div>
+  <div class="row"><div class="cell">Koyeb Free</div><div class="cell">One free service with small CPU/RAM. Better for simple API tests than heavy voice fallback. Good alpha experiment.</div></div>
+  <div class="row"><div class="cell">Railway</div><div class="cell">Developer-friendly, but truly useful always-on usually means usage credits or Hobby plan. Good once small spend is acceptable.</div></div>
+  <div class="row"><div class="cell">Vercel</div><div class="cell">Great for web apps and functions. Awkward for always-running Express + file uploads + Pocket TTS + long audio generation. Not recommended as main AURA backend.</div></div>
+  <div class="row"><div class="cell">Oracle/VPS</div><div class="cell">Best serious-beta choice. A real VM can stay on, run PM2/systemd, install Pocket TTS, keep logs, and be updated with git pull.</div></div>
+</div>
+<div class="note"><strong>Recommendation:</strong> Mac now. Render/Koyeb only for quick public URL tests. Oracle Always Free VM or low-cost VPS for serious beta. Paid managed hosting once real users justify it.</div>
+
+  </div>
+  <div class="footer"><span>Hosting options</span><span>04</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Recommended path</div></div>
+    <h1>A practical rollout ladder.</h1>
+    
+<p class="lead">Do not jump straight from a local prototype to a public App Store launch. AURA needs reliability gates because memory and voice are the magic.</p>
+<div class="flow">
+<div class="step"><div class="step-num">Now</div><div><h3>Local Mac prototype</h3><p>Keep improving product feel. Use Mac backend, existing IPA builds, local Pocket TTS, and local-file fallback while testing daily.</p></div></div><div class="step"><div class="step-num">A1</div><div><h3>Private alpha URL</h3><p>Deploy backend to Render/Koyeb/temporary host with Supabase. Rebuild IPA to point to HTTPS. Accept sleep/cold-start while validating remote behavior.</p></div></div><div class="step"><div class="step-num">A2</div><div><h3>Always-on beta backend</h3><p>Move API to Oracle Always Free VM or a cheap VPS. Install Node, uv/uvx, Pocket TTS, PM2/systemd, Caddy/Nginx HTTPS, and log rotation.</p></div></div><div class="step"><div class="step-num">B1</div><div><h3>TestFlight beta</h3><p>Create Apple developer account, bundle id, signing, privacy policy, app metadata, crash logging, and invite 10-50 trusted users.</p></div></div><div class="step"><div class="step-num">B2</div><div><h3>Paid/limited launch</h3><p>Add accounts, usage caps, export/delete memory, support channel, analytics, and billing/BYOK before wider release.</p></div></div><div class="step"><div class="step-num">P</div><div><h3>Production</h3><p>Move to paid reliable infrastructure, separate staging/prod, backups, monitoring, alerts, provider failover, and incident runbooks.</p></div></div></div>
+
+  </div>
+  <div class="footer"><span>Recommended path</span><span>05</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Backend production design</div></div>
+    <h1>What the server must become.</h1>
+    
+<p class="lead">The current Express backend can evolve into production without a rewrite. It needs durability, account boundaries, and operational guardrails.</p>
+<div class="section-grid">
+<div class="card"><h3>Public HTTPS</h3><p>Expose the API through a domain like <code>api.aura...</code>. Use Caddy/Nginx or platform HTTPS. No IPA should point to local IP.</p></div><div class="card"><h3>Environment secrets</h3><p>OpenRouter, Groq, Gemini, Supabase, and future provider keys live only in backend env vars or secret manager.</p></div><div class="card"><h3>Memory isolation</h3><p>Every archive turn, smart memory, reminder, signal, and relationship record must be tied to a real user id/account.</p></div><div class="card"><h3>Rate limits</h3><p>Per-user daily limits protect provider credits. Beta users can have invite codes and known limits.</p></div><div class="card"><h3>Provider health</h3><p><code>/health</code> should show active key counts, cooldowns, fallback readiness, and memory reachability without leaking secrets.</p></div><div class="card"><h3>Deployment flow</h3><p>GitHub push -> build -> deploy. For VM: SSH/git pull/npm build/PM2 reload. For platforms: auto-deploy with environment variables.</p></div></div>
+<pre class="code">Minimum production backend checklist:
+- HTTPS domain
+- Supabase production project
+- user identity / anonymous id migration plan
+- per-user memory rows
+- provider key rotation
+- logs + health + uptime checks
+- no local filesystem dependency for long-term data
+- backup/export/delete memory endpoints</pre>
+  </div>
+  <div class="footer"><span>Backend production design</span><span>06</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Memory launch plan</div></div>
+    <h1>The memory must be trustworthy.</h1>
+    
+<p class="lead">AURA’s core magic is long-term recall. Production memory cannot be a local JSON file. It needs clear layers, privacy controls, and user trust.</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">Raw archive</div><div class="cell">Source of truth. Every user/AURA turn with timestamp, timezone, role, session id, searchable text, and metadata.</div></div>
+  <div class="row"><div class="cell">Smart memories</div><div class="cell">Summaries, topics, goals, emotions, importance, embeddings, and memory layer. Used for normal context.</div></div>
+  <div class="row"><div class="cell">Session summaries</div><div class="cell">Compact summaries after idle gaps so old conversations can be recalled without giant prompts.</div></div>
+  <div class="row"><div class="cell">Emotional continuity</div><div class="cell">Derived signals and trends. Never overwrite archive truth. Use restraint: subtle companion context, not robotic timestamp dumps.</div></div>
+  <div class="row"><div class="cell">User controls</div><div class="cell">Before public launch: export my data, delete my data, pause memory, clear a memory, and privacy policy explaining storage.</div></div>
+</div>
+<div class="note"><strong>Launch rule:</strong> exact date-wise recall must stay deterministic; emotional intelligence is derived context on top, not replacement truth.</div>
+
+  </div>
+  <div class="footer"><span>Memory launch plan</span><span>07</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Voice launch plan</div></div>
+    <h1>Premium voice without bankrupting the app.</h1>
+    
+<p class="lead">Voice is expensive and fragile if provider limits are ignored. AURA needs a clear hierarchy and telemetry before users arrive.</p>
+<div class="flow">
+<div class="step"><div class="step-num">1</div><div><h3>Gemini TTS premium path</h3><p>Use Gemini for the best AURA voice when keys/quota are healthy. Track cooldowns and failures.</p></div></div><div class="step"><div class="step-num">2</div><div><h3>Pocket TTS fallback</h3><p>Keep Pocket TTS as a no-provider-quota backend fallback. Best on a VM/VPS where model/runtime can stay warm.</p></div></div><div class="step"><div class="step-num">3</div><div><h3>iOS speech emergency</h3><p>Use device speech only if backend voice fails. It should be loud and normal, but not the main brand voice.</p></div></div><div class="step"><div class="step-num">4</div><div><h3>Language routing</h3><p>For Hindi/Hinglish, Gemini is best. Pocket English can sound accented. Later route Hindi-heavy fallback directly to a better Hindi provider or iOS <code>hi-IN</code>.</p></div></div><div class="step"><div class="step-num">5</div><div><h3>Voice metrics</h3><p>Store provider used, latency, error type, and fallback count. This tells when paid TTS is necessary.</p></div></div></div>
+<pre class="code">Voice strategy at launch:
+Normal chat: Gemini -&gt; Pocket -&gt; iOS
+Foreground reminder: Gemini -&gt; Pocket -&gt; iOS
+Background reminder: notification banner only
+
+Do not promise background spoken voice. iOS will not reliably let the app speak while killed/closed.</pre>
+  </div>
+  <div class="footer"><span>Voice launch plan</span><span>08</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Reminder launch plan</div></div>
+    <h1>Useful, honest, reliable.</h1>
+    
+<p class="lead">AURA reminders should feel personal, but the product must be honest about iOS limits. Foreground voice is magical; background delivery is notification-only.</p>
+<div class="section-grid two">
+  <div class="card"><h3>Foreground</h3><p>If app is open at reminder time, AURA shows the reminder text and speaks it through Gemini/Pocket/iOS. This is the premium experience.</p></div>
+  <div class="card"><h3>Background/closed</h3><p>iOS local notification banner appears from the AURA app. No custom voice promise. No fragile custom notification sound requirement.</p></div>
+  <div class="card"><h3>Check-ins</h3><p>Self-improvement prompts like “ask me in 30 minutes if I’m still smoking” become check-ins, and answers are saved as memory context.</p></div>
+  <div class="card"><h3>Production reliability</h3><p>Reminders need server record + local notification id + status. Future multi-device support needs cloud sync and conflict handling.</p></div>
+</div>
+<div class="note"><strong>UX wording:</strong> when setting a foreground-style reminder, AURA can say: “I’ll remind you. Keep AURA open around then if you want me to speak it.”</div>
+
+  </div>
+  <div class="footer"><span>Reminder launch plan</span><span>09</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">App Store path</div></div>
+    <h1>From IPA to real users.</h1>
+    
+<p class="lead">Sideloadly is for prototype testing. Real users require TestFlight/App Store, stable signing, privacy disclosures, and support.</p>
+<div class="flow">
+<div class="step"><div class="step-num">01</div><div><h3>Apple developer account</h3><p>Enroll, create bundle id, app record, signing certificates/profiles, and TestFlight pipeline.</p></div></div><div class="step"><div class="step-num">02</div><div><h3>Production backend URL</h3><p>Build app with public HTTPS API URL. Add remote config later so backend URL changes do not require a full rebuild.</p></div></div><div class="step"><div class="step-num">03</div><div><h3>Privacy policy</h3><p>Explain voice transcription, conversation archive, memory storage, reminders, provider processing, data deletion, and support contact.</p></div></div><div class="step"><div class="step-num">04</div><div><h3>Crash/error reporting</h3><p>Add Sentry/Expo style crash logs and backend request ids so failed voice/memory flows can be debugged.</p></div></div><div class="step"><div class="step-num">05</div><div><h3>TestFlight beta</h3><p>Invite trusted users first. Watch provider cost, memory correctness, reminder reliability, and emotional UX.</p></div></div><div class="step"><div class="step-num">06</div><div><h3>App Store release</h3><p>Submit only after backend uptime, privacy controls, support email, and usage limits are ready.</p></div></div></div>
+
+  </div>
+  <div class="footer"><span>App Store path</span><span>10</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Business and cost model</div></div>
+    <h1>AURA cannot pay for everyone silently.</h1>
+    
+<p class="lead">The launch model must protect provider costs. Voice + LLM + STT can become expensive if every user has unlimited usage.</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">Cost drivers</div><div class="cell">OpenRouter LLM, Groq STT, Gemini TTS, backend compute, database storage, logs, egress, App Store developer program.</div></div>
+  <div class="row"><div class="cell">Free beta</div><div class="cell">Invite-only, usage-limited, Rehan-funded. Keep daily message/voice caps and monitor fallback usage.</div></div>
+  <div class="row"><div class="cell">BYOK</div><div class="cell">Power users add their own OpenRouter/Groq/Gemini keys. Reduces cost burden, but UX must validate and store securely.</div></div>
+  <div class="row"><div class="cell">Subscription</div><div class="cell">Normal users pay for hosted usage. Best long-term UX, but requires billing, quotas, and clear plan limits.</div></div>
+  <div class="row"><div class="cell">Hybrid</div><div class="cell">Recommended: free trial with limits, BYOK option, and paid hosted plan when public launch starts.</div></div>
+</div>
+<div class="note"><strong>Simple rule:</strong> until revenue exists, do not offer unlimited hosted AI voice/memory to public users.</div>
+
+  </div>
+  <div class="footer"><span>Business and cost model</span><span>11</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Privacy and trust</div></div>
+    <h1>Memory apps need unusual care.</h1>
+    
+<p class="lead">AURA stores intimate life context. Trust is not decoration; it is core product infrastructure.</p>
+<div class="section-grid">
+<div class="card"><h3>Clear consent</h3><p>Tell users AURA saves conversations and summaries so it can remember. No buried surprise.</p></div><div class="card"><h3>Memory controls</h3><p>Pause memory, delete one memory, delete all data, export archive, and disable emotional continuity.</p></div><div class="card"><h3>Data boundaries</h3><p>Never leak memories across users. Every memory query must filter by user id before ranking.</p></div><div class="card"><h3>Sensitive topics</h3><p>Avoid diagnosis, manipulation, or overconfident psychological labels. Use gentle language.</p></div><div class="card"><h3>Retention</h3><p>Define how long raw archives and summaries live. Let users clear old archive if they want.</p></div><div class="card"><h3>Provider disclosure</h3><p>Explain that audio/text may be processed by AI providers like Groq, OpenRouter, Gemini, or future services.</p></div></div>
+
+  </div>
+  <div class="footer"><span>Privacy and trust</span><span>12</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Operations</div></div>
+    <h1>How AURA stays alive.</h1>
+    
+<p class="lead">AURA needs a small operating system around it: health checks, logs, backups, alerts, and deploy discipline.</p>
+<div class="checklist">
+  <div><strong>Health:</strong> public <code>/health</code> shows provider status, memory database reachability, archive readiness, and voice fallback readiness.</div>
+  <div><strong>Logs:</strong> request id, user id hash, route, latency, provider used, error class, voice provider, reminder id, memory write result.</div>
+  <div><strong>Alerts:</strong> backend down, OpenRouter all keys cooling, Gemini all keys cooling, Pocket TTS failing, Supabase unreachable, reminders not delivering.</div>
+  <div><strong>Backups:</strong> Supabase backups/export, periodic archive dump, migration scripts, and memory restore test.</div>
+  <div><strong>Deploys:</strong> staging before prod, rollback path, env var checklist, and no deploy right before important testing.</div>
+  <div><strong>Support:</strong> user-visible error messages should be calm and short, not “brain broken” unless debugging.</div>
+</div>
+
+  </div>
+  <div class="footer"><span>Operations</span><span>13</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Technical migration</div></div>
+    <h1>What changes from local to cloud.</h1>
+    
+<p class="lead">The codebase does not need a full rewrite. The migration is mostly configuration, persistence, auth, and deployment hardening.</p>
+<div class="mini-table">
+  <div class="row"><div class="cell">API URL</div><div class="cell">Replace <code>http://192.168.1.7:4000</code> with public HTTPS in mobile env. Later add remote config and multiple API candidates.</div></div>
+  <div class="row"><div class="cell">Storage</div><div class="cell">Move from local JSON fallback to Supabase tables for archive, memories, reminders, theme scores, relationships, todos, and usage.</div></div>
+  <div class="row"><div class="cell">Auth</div><div class="cell">Start with anonymous durable user id, then add Apple Sign In or email login for multi-device sync and account recovery.</div></div>
+  <div class="row"><div class="cell">Pocket TTS</div><div class="cell">Prefer VM/VPS. Install <code>uvx</code>, warm model cache, set timeout, monitor CPU, and make fallback non-blocking.</div></div>
+  <div class="row"><div class="cell">Rebuild</div><div class="cell">IPA/App Store build required when API URL or native capabilities change. Backend-only changes deploy without app rebuild.</div></div>
+</div>
+<pre class="code">Minimum cloud env vars:
+PORT=4000
+HOST=0.0.0.0
+APP_ORIGIN=*
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+OPENROUTER_API_KEYS=...
+OPENROUTER_MODEL=z-ai/glm-4.5-air:free
+GROQ_API_KEYS=...
+GEMINI_API_KEYS=...
+POCKET_TTS_ENABLED=true
+POCKET_TTS_COMMAND=uvx
+POCKET_TTS_COMMAND_ARGS=pocket-tts,generate</pre>
+  </div>
+  <div class="footer"><span>Technical migration</span><span>14</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Roadmap</div></div>
+    <h1>A sane order of work.</h1>
+    
+<p class="lead">This roadmap avoids the tempting trap of adding shiny features before the launch foundation is ready.</p>
+<div class="flow">
+<div class="step"><div class="step-num">0</div><div><h3>Keep refining locally</h3><p>Mac backend remains the fastest lab. Keep improving UI, voice timing, reminder feel, and memory quality.</p></div></div><div class="step"><div class="step-num">1</div><div><h3>Supabase production schema</h3><p>Finalize tables, policies/server-only access, backup/export/delete strategy, and migration scripts.</p></div></div><div class="step"><div class="step-num">2</div><div><h3>Public backend alpha</h3><p>Deploy a quick HTTPS backend. Rebuild IPA with remote API URL. Test STT, chat, voice, memory, reminders.</p></div></div><div class="step"><div class="step-num">3</div><div><h3>Always-on beta backend</h3><p>Move to VM/VPS/Oracle. Add PM2/systemd, Caddy HTTPS, Pocket TTS cache, logs, uptime monitor.</p></div></div><div class="step"><div class="step-num">4</div><div><h3>Accounts and privacy</h3><p>Add Apple Sign In or anonymous-to-account migration, privacy policy, delete/export controls.</p></div></div><div class="step"><div class="step-num">5</div><div><h3>TestFlight</h3><p>Invite small group. Measure latency, cost, memory correctness, reminder reliability, emotional UX.</p></div></div><div class="step"><div class="step-num">6</div><div><h3>Monetization</h3><p>Add BYOK and/or subscription caps. Do not open public unlimited usage before cost controls exist.</p></div></div><div class="step"><div class="step-num">7</div><div><h3>App Store</h3><p>Submit with production backend, support, privacy, analytics, crash logs, and real operational monitoring.</p></div></div></div>
+
+  </div>
+  <div class="footer"><span>Roadmap</span><span>15</span></div>
+</section>
+<section class="page">
+  <div class="grain"></div>
+  <div class="content">
+    <div class="topbar"><div class="brand">AURA</div><div class="pill">Decision summary</div></div>
+    <h1>The recommended future.</h1>
+    
+<p class="lead">For now, AURA stays on the Mac. That is the correct move while the product is still being shaped. The serious future is a public HTTPS backend plus persistent memory, then TestFlight.</p>
+<div class="section-grid two">
+  <div class="card"><h3>Do now</h3><p>Keep Mac backend for fast testing. Keep improving AURA’s feel, memory, reminders, and voice.</p></div>
+  <div class="card"><h3>Do next</h3><p>Create Supabase production schema and deploy a temporary HTTPS backend to prove the remote flow.</p></div>
+  <div class="card"><h3>Do for beta</h3><p>Use Oracle Always Free VM or a low-cost VPS for always-on backend and Pocket TTS. Then build TestFlight.</p></div>
+  <div class="card"><h3>Do for launch</h3><p>Add accounts, data controls, usage caps, billing/BYOK, support, monitoring, and App Store metadata.</p></div>
+</div>
+<div class="note"><strong>Core principle:</strong> AURA is not just “chat with voice.” Its defensible magic is emotionally intelligent long-term memory. Protect reliability and trust before scale.</div>
+<div class="refs">
+  <div>References: Render Free, Railway Pricing, Vercel Function Limits, Koyeb Pricing FAQ, Oracle Always Free, Supabase Pricing.</div>
+  <div>Generated for the current AURA prototype on May 16, 2026.</div>
+</div>
+
+  </div>
+  <div class="footer"><span>Decision summary</span><span>16</span></div>
+</section></body></html>

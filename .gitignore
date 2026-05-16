@@ -1,0 +1,35 @@
+node_modules
+dist
+.expo
+build
+*.log
+*.pid
+.env
+.env.local
+.elevenlabs.local.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+
+# AURA private/local runtime data
+apps/api/.env
+apps/api/data/
+apps/api/*.log
+apps/api/*.pid
+
+# Expo / React Native generated artifacts
+apps/mobile/dist/
+apps/mobile/.expo/
+apps/mobile/ios/Pods/
+apps/mobile/ios/build/
+apps/mobile/ios/DerivedData/
+apps/mobile/ios/*.xcarchive
+apps/mobile/ios/**/*.xcuserdata/
+apps/mobile/ios/Podfile.lock
+
+# IPA / archive outputs
+*.ipa
+*.xcarchive
+*.dSYM
+*.zip
