@@ -227,8 +227,17 @@ export async function synthesizeGeminiVoiceOnly(text: string, overrides?: Provid
 
   try {
     const promiseAttempts = attempts.map(async (attempt) => {
-      const result = await requestGeminiVoice(text, attempt.key, attempt.controller.signal, overrides);
-      return { ...result, key: keyLabel(attempt.key, overrides) };
+      const label = keyLabel(attempt.key, overrides);
+      try {
+        const result = await requestGeminiVoice(text, attempt.key, attempt.controller.signal, overrides);
+        return { ...result, key: label };
+      } catch (error) {
+        console.warn("[gemini-tts] primary attempt failed", {
+          key: label,
+          message: error instanceof Error ? error.message.slice(0, 320) : String(error).slice(0, 320)
+        });
+        throw error;
+      }
     });
     const result = await Promise.any(promiseAttempts);
     for (const attempt of attempts) attempt.controller.abort();
@@ -241,8 +250,12 @@ export async function synthesizeGeminiVoiceOnly(text: string, overrides?: Provid
     });
     return result;
   } catch (error) {
-    console.warn("[gemini-tts] primary failed", error instanceof Error ? error.message : error);
-    throw error;
+    const messages = error instanceof AggregateError
+      ? error.errors.map((item) => item instanceof Error ? item.message : String(item)).join(" | ")
+      : error instanceof Error ? error.message : String(error);
+    const message = messages.slice(0, 700) || "Gemini TTS failed.";
+    console.warn("[gemini-tts] primary failed", message);
+    throw new Error(message);
   } finally {
     clearTimeout(timeout);
     for (const attempt of attempts) attempt.cleanup();
