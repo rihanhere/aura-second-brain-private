@@ -611,6 +611,10 @@ async function recentAssistantReplies(userId: string, sessionId: string) {
 
 async function deRepeatCompanionReply(reply: string, content: string, userId: string, sessionId: string, mode: string) {
   if (mode === "utility") return reply;
+  const directCommand = deterministicCommandReply(content);
+  if (directCommand) return directCommand;
+  const directPattern = deterministicRecentPatternReply(content);
+  if (directPattern) return directPattern;
   if (/^\s*(hmm+|hm+|umm+|uh+|haan|ha|ok|okay|acha|achha|huh)\s*\.?$/i.test(content)) {
     return "Yeah?";
   }
