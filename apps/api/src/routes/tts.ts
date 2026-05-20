@@ -1,8 +1,10 @@
-import { Router } from "express";
+import { Router, type Request } from "express";
 import { Readable, Transform } from "node:stream";
 import { z } from "zod";
 import { env } from "../config/env.js";
 import { getUserId } from "../middleware/auth.js";
+import { providerOverridesFromRequest } from "../services/providerOverrides.js";
+import { getGeminiVoiceStatus, synthesizeGeminiVoiceOnly } from "../services/geminiVoice.js";
 
 export const ttsRouter = Router();
 
@@ -10,7 +12,8 @@ type TtsSession = {
   id: string;
   userId: string;
   text: string;
-  voiceId: string;
+  provider: "elevenlabs" | "gemini";
+  voiceId?: string;
   modelId: string;
   outputFormat: string;
   createdAt: number;
@@ -92,6 +95,7 @@ async function resolveElevenLabsVoiceId(override?: string) {
 }
 
 function elevenLabsUrl(session: TtsSession) {
+  if (!session.voiceId) throw new Error("ElevenLabs voice id is missing.");
   const params = new URLSearchParams({
     output_format: session.outputFormat,
     optimize_streaming_latency: String(Math.max(0, Math.min(4, env.elevenLabsOptimizeStreamingLatency)))
@@ -129,15 +133,94 @@ async function fetchElevenLabsStream(session: TtsSession, signal: AbortSignal) {
 }
 
 ttsRouter.get("/status", (_req, res) => {
+  const gemini = getGeminiVoiceStatus();
   res.json({
     ok: true,
-    provider: "elevenlabs",
-    configured: Boolean(env.elevenLabsApiKey),
-    voiceIdConfigured: Boolean(env.elevenLabsVoiceId),
-    modelId: env.elevenLabsModelId,
-    outputFormat: env.elevenLabsOutputFormat,
+    provider: "gemini",
+    configured: gemini.configured,
+    modelId: gemini.model,
+    voice: gemini.voice,
+    outputFormat: "wav_pcm_24000",
     maxChars: env.elevenLabsMaxChars
   });
+});
+
+ttsRouter.post("/gemini/session", async (req, res, next) => {
+  try {
+    cleanupSessions();
+    const body = sessionSchema.parse(req.body);
+    const userId = getUserId(req);
+    assertRateLimit(userId);
+    const id = crypto.randomUUID();
+    const session: TtsSession = {
+      id,
+      userId,
+      provider: "gemini",
+      text: body.text.replace(/\s+/g, " ").trim(),
+      modelId: env.geminiTtsModel,
+      outputFormat: "wav_pcm_24000",
+      createdAt: Date.now(),
+      consumed: false,
+      voiceRunId: body.voiceRunId == null ? null : String(body.voiceRunId)
+    };
+    sessions.set(id, session);
+    console.log("[tts-gemini] session_created", {
+      userId,
+      sessionId: id,
+      voiceRunId: session.voiceRunId,
+      chars: session.text.length,
+      modelId: session.modelId,
+      voice: env.geminiTtsVoice
+    });
+    res.json({
+      provider: "gemini",
+      model: session.modelId,
+      mimeType: "audio/wav",
+      streamId: id,
+      audioUrl: `/tts/gemini/session/${id}/audio`,
+      expiresInMs: SESSION_TTL_MS
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+ttsRouter.post("/gemini/stream", async (req, res, next) => {
+  try {
+    const body = sessionSchema.parse(req.body);
+    const userId = getUserId(req);
+    assertRateLimit(userId);
+    const session: TtsSession = {
+      id: `direct-${crypto.randomUUID()}`,
+      userId,
+      provider: "gemini",
+      text: body.text.replace(/\s+/g, " ").trim(),
+      modelId: env.geminiTtsModel,
+      outputFormat: "wav_pcm_24000",
+      createdAt: Date.now(),
+      consumed: true,
+      voiceRunId: body.voiceRunId == null ? null : String(body.voiceRunId)
+    };
+    await sendGeminiAudio(session, req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+ttsRouter.get("/gemini/session/:id/audio", async (req, res, next) => {
+  try {
+    cleanupSessions();
+    const session = sessions.get(req.params.id);
+    if (!session || session.consumed || session.provider !== "gemini") {
+      res.status(404).json({ message: "TTS stream expired." });
+      return;
+    }
+    session.consumed = true;
+    sessions.delete(session.id);
+    await sendGeminiAudio(session, req, res);
+  } catch (error) {
+    next(error);
+  }
 });
 
 ttsRouter.post("/elevenlabs/session", async (req, res, next) => {
@@ -153,6 +236,7 @@ ttsRouter.post("/elevenlabs/session", async (req, res, next) => {
     const session: TtsSession = {
       id,
       userId,
+      provider: "elevenlabs",
       text: body.text.replace(/\s+/g, " ").trim(),
       voiceId,
       modelId,
@@ -191,6 +275,7 @@ ttsRouter.post("/elevenlabs/stream", async (req, res, next) => {
     const session: TtsSession = {
       id: `direct-${crypto.randomUUID()}`,
       userId,
+      provider: "elevenlabs",
       text: body.text.replace(/\s+/g, " ").trim(),
       voiceId: await resolveElevenLabsVoiceId(body.voiceId),
       modelId: body.modelId?.trim() || env.elevenLabsModelId,
@@ -209,7 +294,7 @@ ttsRouter.get("/elevenlabs/session/:id/audio", async (req, res, next) => {
   try {
     cleanupSessions();
     const session = sessions.get(req.params.id);
-    if (!session || session.consumed) {
+    if (!session || session.consumed || session.provider !== "elevenlabs") {
       res.status(404).json({ message: "TTS stream expired." });
       return;
     }
@@ -275,4 +360,78 @@ async function pipeElevenLabsAudio(session: TtsSession, req: { on: (event: strin
       firstByteLogged
     });
   });
+}
+
+function sampleRateFromMime(mimeType?: string | null) {
+  const match = /rate=(\d+)/i.exec(mimeType ?? "");
+  return match ? Number(match[1]) : 24000;
+}
+
+function pcmToWav(pcm: Buffer, sampleRate = 24000, channels = 1, bitsPerSample = 16) {
+  const byteRate = sampleRate * channels * (bitsPerSample / 8);
+  const blockAlign = channels * (bitsPerSample / 8);
+  const header = Buffer.alloc(44);
+  header.write("RIFF", 0);
+  header.writeUInt32LE(36 + pcm.length, 4);
+  header.write("WAVE", 8);
+  header.write("fmt ", 12);
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20);
+  header.writeUInt16LE(channels, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(byteRate, 28);
+  header.writeUInt16LE(blockAlign, 32);
+  header.writeUInt16LE(bitsPerSample, 34);
+  header.write("data", 36);
+  header.writeUInt32LE(pcm.length, 40);
+  return Buffer.concat([header, pcm]);
+}
+
+async function sendGeminiAudio(session: TtsSession, req: Request, res: import("express").Response) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+  req.on("close", () => controller.abort());
+  const startedAt = Date.now();
+
+  try {
+    console.log("[tts-gemini] stream_started", {
+      userId: session.userId,
+      sessionId: session.id,
+      voiceRunId: session.voiceRunId,
+      chars: session.text.length
+    });
+    const result = await synthesizeGeminiVoiceOnly(session.text, providerOverridesFromRequest(req), {
+      signal: controller.signal,
+      jobId: session.id
+    });
+    const pcm = Buffer.from(result.audioBase64, "base64");
+    const sampleRate = sampleRateFromMime(result.mimeType);
+    const audio = result.mimeType?.includes("wav") ? pcm : pcmToWav(pcm, sampleRate);
+
+    res.setHeader("Content-Type", "audio/wav");
+    res.setHeader("Content-Length", String(audio.length));
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("X-Aura-TTS-Provider", "gemini");
+    res.setHeader("X-Aura-TTS-Model", result.model);
+    res.setHeader("X-Aura-TTS-Voice", result.voice);
+    res.setHeader("X-Aura-TTS-Started-At", new Date(startedAt).toISOString());
+    console.log("[tts-gemini] first_provider_audio", {
+      userId: session.userId,
+      sessionId: session.id,
+      voiceRunId: session.voiceRunId,
+      ms: Date.now() - startedAt,
+      pcmBytes: pcm.length,
+      wavBytes: audio.length,
+      sampleRate
+    });
+    res.end(audio);
+  } finally {
+    clearTimeout(timeout);
+    console.log("[tts-gemini] stream_finished", {
+      userId: session.userId,
+      sessionId: session.id,
+      voiceRunId: session.voiceRunId,
+      durationMs: Date.now() - startedAt
+    });
+  }
 }

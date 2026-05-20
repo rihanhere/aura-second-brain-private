@@ -58,7 +58,7 @@ function allConfiguredKeysCoolingDown(overrides?: ProviderOverrides) {
 }
 
 async function requestGeminiVoice(text: string, key: string, signal: AbortSignal, overrides?: ProviderOverrides) {
-  const prompt = `Read this as AURA, a calm premium AI life journal. Use natural Hindi / Hinglish when Hindi is present. Speak clearly, warmly, and concisely. Do not add extra words. Text:\n\n${text}`;
+  const prompt = `Read this naturally as Aura. Match the user's language, including Hindi or Hinglish when present. Do not add, skip, explain, or rewrite words. Text:\n\n${text}`;
 
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${env.geminiTtsModel}:generateContent`, {
     method: "POST",
@@ -201,6 +201,52 @@ export async function synthesizeAgentVoiceFast(text: string, overrides?: Provide
   }
 
   return synthesizePocketVoice(text, overrides?.chaos, options);
+}
+
+export async function synthesizeGeminiVoiceOnly(text: string, overrides?: ProviderOverrides, options: VoiceSynthesisOptions = {}) {
+  throwIfAborted(options.signal);
+  if (overrides?.chaos?.geminiFail) {
+    throw new Error("Gemini TTS is unavailable for this request.");
+  }
+  if (allConfiguredKeysCoolingDown(overrides)) {
+    throw new Error("All Gemini TTS keys are cooling down.");
+  }
+
+  const keys = activeKeys(overrides).slice(0, 3);
+  if (!keys.length) {
+    throw new Error("Gemini TTS is not configured.");
+  }
+
+  const attempts = keys.map((key) => ({
+    key,
+    ...childAttemptSignal(options.signal)
+  }));
+  const timeout = setTimeout(() => {
+    for (const attempt of attempts) attempt.controller.abort();
+  }, 9000);
+
+  try {
+    const promiseAttempts = attempts.map(async (attempt) => {
+      const result = await requestGeminiVoice(text, attempt.key, attempt.controller.signal, overrides);
+      return { ...result, key: keyLabel(attempt.key, overrides) };
+    });
+    const result = await Promise.any(promiseAttempts);
+    for (const attempt of attempts) attempt.controller.abort();
+    console.log("[gemini-tts] primary success", {
+      jobId: options.jobId,
+      key: result.key,
+      model: result.model,
+      voice: result.voice,
+      bytesBase64: result.audioBase64.length
+    });
+    return result;
+  } catch (error) {
+    console.warn("[gemini-tts] primary failed", error instanceof Error ? error.message : error);
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+    for (const attempt of attempts) attempt.cleanup();
+  }
 }
 
 export function getGeminiVoiceStatus() {
