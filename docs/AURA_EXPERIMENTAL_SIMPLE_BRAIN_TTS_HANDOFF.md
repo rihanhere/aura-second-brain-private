@@ -60,6 +60,10 @@ Supertonic assets were stripped only from the experimental workspace. The stable
   - `remind me in 10 minutes...` -> real reminder object created.
   - `remember this...` -> durable memory save path returns confirmation.
   - simple normal-chat pattern checks pass.
+- Render hardening suite:
+  - `AURA_TEST_API_URL=https://aura-api-simple-staging.onrender.com npm run test:human-conversation`: pass in structure-mock mode.
+- Render TTS missing-key behavior:
+  - `/tts/elevenlabs/session` returns a clean `ElevenLabs TTS is not configured.` message until `ELEVENLABS_API_KEY` is set.
 
 ## Current Blockers
 
