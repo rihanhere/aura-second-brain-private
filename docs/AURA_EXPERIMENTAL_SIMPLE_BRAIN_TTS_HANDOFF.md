@@ -42,31 +42,57 @@ Supertonic assets were stripped only from the experimental workspace. The stable
 - `npm run build --workspace apps/api`: pass.
 - `npm run typecheck --workspace apps/mobile`: pass.
 - Local simplified capture smoke with structure mock: pass.
-- `/tts/status`: pass; reports ElevenLabs unconfigured until backend env is set.
+- New GitHub branch pushed:
+  - repo: `rihanhere/aura-second-brain-private`
+  - branch: `codex/simple-brain-api-tts-20260521`
+  - commit: `a0be260`
+- New Render service created without touching the stable service:
+  - service: `aura-api-simple-staging`
+  - URL: `https://aura-api-simple-staging.onrender.com`
+  - status: Live
+- Render endpoint checks:
+  - `/health`: pass.
+  - `/tts/status`: pass; reports ElevenLabs unconfigured until secret env is set.
+- Render deterministic `/capture` smoke:
+  - `open github` -> honest unsupported reply.
+  - `switch voice` -> honest unsupported reply.
+  - `pause` -> `Okay.`
+  - `remind me in 10 minutes...` -> real reminder object created.
+  - `remember this...` -> durable memory save path returns confirmation.
+  - simple normal-chat pattern checks pass.
 
 ## Current Blockers
 
-- New Render staging service is not deployed from this machine yet.
-- TESSERACT has no configured `gh` or Render CLI and the project has no git remote.
+- Provider secrets are not yet configured on the new Render service.
+- `/health` currently reports no brain provider keys and no voice provider keys.
+- `/tts/status` currently reports `configured: false`.
+- Full real LLM normal chat and ElevenLabs streaming cannot be certified until Render env secrets are added.
+- IPA variants should not be built/frozen until the new Render service passes `/capture` and `/tts/status` with secrets configured.
+- This current machine is not TESSERACT; the experimental IPA build script must run on TESSERACT or another machine with the iOS build environment and the experimental workspace.
 - Do not put `ELEVENLABS_API_KEY` into mobile `.env` or source files.
 
 ## Next Required Steps
 
-1. Create a new GitHub repo/branch or connect this experimental workspace to a deployable repo.
-2. Create Render service `aura-api-simple-staging` from this workspace.
-3. Add Render env vars:
-   - `AURA_SIMPLIFIED_BRAIN=1`
+1. Add backend-only secret env vars directly in Render for `aura-api-simple-staging`:
    - `OPENROUTER_API_KEYS`
    - `GROQ_API_KEYS`
    - `GEMINI_API_KEYS`
    - `ELEVENLABS_API_KEY`
    - optional `ELEVENLABS_VOICE_ID`
+2. Confirm non-secret env vars remain:
+   - `AURA_SIMPLIFIED_BRAIN=1`
+   - `AURA_ENV=simple-staging`
+   - `HOST=0.0.0.0`
+   - `ELEVENLABS_MODEL_ID=eleven_flash_v2_5`
+   - `ELEVENLABS_OUTPUT_FORMAT=mp3_44100_128`
+   - `ELEVENLABS_OPTIMIZE_STREAMING_LATENCY=3`
+3. Redeploy after env changes.
 4. Verify:
    - `/health`
    - `/capture`
    - `/tts/status`
    - `/tts/elevenlabs/session`
-5. Build variants:
+5. Build variants on TESSERACT:
    - `AURA_SIMPLE_BACKEND_URL=https://aura-api-simple-staging.onrender.com scripts/build-experimental-api-tts-variants.sh`
 
 ## Protected Systems
