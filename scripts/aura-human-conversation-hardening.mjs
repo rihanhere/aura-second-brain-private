@@ -44,12 +44,12 @@ const checks = [
   {
     name: "switch voice",
     input: "switch voice",
-    check: (reply) => /^sure\.?$/i.test(reply) && !/movie|film|series/i.test(reply)
+    check: (reply) => /can't switch voices from here yet/i.test(reply) && !/movie|film|series/i.test(reply)
   },
   {
     name: "open github",
     input: "open github",
-    check: (reply) => /^opening github\.?$/i.test(reply)
+    check: (reply) => /can't open github from here yet/i.test(reply)
   },
   {
     name: "bike crash",

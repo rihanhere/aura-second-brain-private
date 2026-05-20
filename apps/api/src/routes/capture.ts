@@ -84,15 +84,18 @@ function deterministicCommandReply(content: string) {
   if (/\b(?:switch|change)\b.{0,30}\bvoice\b/i.test(normalized)
     || /\bvoice\b.{0,30}\b(?:switch|change|male|female)\b/i.test(normalized)
     || /\b(?:male|female)\s+voice\b/i.test(normalized)) {
-    return "sure.";
+    return "I can't switch voices from here yet.";
   }
 
   const openMatch = normalized.match(/^\s*(?:open|launch|start)\s+([a-z][a-z0-9 ]{1,40})\s*$/i);
   if (openMatch?.[1]) {
-    const rawTarget = openMatch[1].trim();
-    const allowedTargets = ["github", "camera", "safari", "google", "chatgpt", "settings", "calendar", "notes", "mail", "messages", "whatsapp", "youtube"];
-    const target = allowedTargets.find((candidate) => new RegExp(`\\b${candidate}\\b`, "i").test(rawTarget));
-    if (target) return `opening ${target}.`;
+    const target = openMatch[1].trim().replace(/^(the|my)\s+/i, "");
+    if (!target || /^(it|this|that|there)$/i.test(target)) return "What should I open?";
+    const displayTarget = target.toLowerCase() === "github"
+      ? "GitHub"
+      : target.charAt(0).toUpperCase() + target.slice(1);
+    if (target.toLowerCase() === "camera") return "I can't open the camera from here yet.";
+    return `I can't open ${displayTarget} from here yet.`;
   }
 
   return null;
@@ -611,6 +614,10 @@ async function recentAssistantReplies(userId: string, sessionId: string) {
 
 async function deRepeatCompanionReply(reply: string, content: string, userId: string, sessionId: string, mode: string) {
   if (mode === "utility") return reply;
+  if ((/^(?:open|launch|start)\b/i.test(content.trim()) && /\bcan't open\b/i.test(reply))
+    || (/\b(?:switch|change)\b.{0,40}\b(?:voice|male|female)\b/i.test(content) && /\bcan't switch voices\b/i.test(reply))) {
+    return reply;
+  }
   const directCommand = deterministicCommandReply(content);
   if (directCommand) return directCommand;
   const directPattern = deterministicRecentPatternReply(content);

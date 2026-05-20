@@ -25,13 +25,5 @@ export function inferAgentTool(content: string): AgentToolCall {
     };
   }
 
-  if (/\b(todo|to-do|task|need to|should)\b/i.test(content)) {
-    return {
-      tool: "create_todo",
-      confidence: 0.68,
-      payload: { title: content.replace(/^todo:?\s*/i, "").trim(), priority: "medium" }
-    };
-  }
-
   return { tool: "none", confidence: 0, payload: {} };
 }

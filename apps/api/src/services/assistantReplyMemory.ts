@@ -171,13 +171,17 @@ function fallbackCandidates(userText: string, repairCooldown: boolean) {
 function directCalibratedReply(userText: string) {
   if (/\b(?:switch|change)\b.{0,30}\bvoice\b/i.test(userText)
     || /\bvoice\b.{0,30}\b(?:switch|change|male|female)\b/i.test(userText)) {
-    return "sure.";
+    return "I can't switch voices from here yet.";
   }
   const openMatch = userText.toLowerCase().trim().match(/^\s*(?:open|launch|start)\s+([a-z][a-z0-9 ]{1,40})\s*$/i);
   if (openMatch?.[1]) {
-    const target = ["github", "camera", "safari", "google", "chatgpt", "settings", "calendar", "notes", "mail", "messages", "whatsapp", "youtube"]
-      .find((candidate) => new RegExp(`\\b${candidate}\\b`, "i").test(openMatch[1]));
-    if (target) return `opening ${target}.`;
+    const target = openMatch[1].trim().replace(/^(the|my)\s+/i, "");
+    if (!target || /^(it|this|that|there)$/i.test(target)) return "What should I open?";
+    const displayTarget = target.toLowerCase() === "github"
+      ? "GitHub"
+      : target.charAt(0).toUpperCase() + target.slice(1);
+    if (target.toLowerCase() === "camera") return "I can't open the camera from here yet.";
+    return `I can't open ${displayTarget} from here yet.`;
   }
   if (/\b(?:crashed|crash|fell|gir gaya|accident)\b.{0,40}\b(?:bike|scooty|scooter|cycle)\b/i.test(userText)
     || /\b(?:bike|scooty|scooter|cycle)\b.{0,40}\b(?:crashed|crash|fell|accident)\b/i.test(userText)) {
@@ -216,6 +220,11 @@ export async function guardAssistantReply(input: {
   mode: string;
 }) {
   if (input.mode === "utility") {
+    return { reply: input.reply, changed: false, issues: [], repairCooldown: false } satisfies AssistantReplyGuardResult;
+  }
+
+  if ((/^(?:open|launch|start)\b/i.test(input.userText.trim()) && /\bcan't open\b/i.test(input.reply))
+    || (/\b(?:switch|change)\b.{0,40}\b(?:voice|male|female)\b/i.test(input.userText) && /\bcan't switch voices\b/i.test(input.reply))) {
     return { reply: input.reply, changed: false, issues: [], repairCooldown: false } satisfies AssistantReplyGuardResult;
   }
 
