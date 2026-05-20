@@ -124,6 +124,8 @@ export async function recordAssistantReply(input: {
 
 function fallbackCandidates(userText: string, repairCooldown: boolean) {
   const candidates: string[] = [];
+  const direct = directCalibratedReply(userText);
+  if (direct) candidates.push(direct);
   if (/\b(answer normally|reply normally|normal answer|seedha jawab|simple bol|simple answer)\b/i.test(userText)) {
     candidates.push("Okay. Simple and direct.");
   }
@@ -166,6 +168,37 @@ function fallbackCandidates(userText: string, repairCooldown: boolean) {
   return candidates;
 }
 
+function directCalibratedReply(userText: string) {
+  if (/\b(?:switch|change)\b.{0,30}\bvoice\b/i.test(userText)
+    || /\bvoice\b.{0,30}\b(?:switch|change|male|female)\b/i.test(userText)) {
+    return "sure.";
+  }
+  const openMatch = userText.toLowerCase().trim().match(/^\s*(?:open|launch|start)\s+([a-z][a-z0-9 ]{1,40})\s*$/i);
+  if (openMatch?.[1]) {
+    const target = ["github", "camera", "safari", "google", "chatgpt", "settings", "calendar", "notes", "mail", "messages", "whatsapp", "youtube"]
+      .find((candidate) => new RegExp(`\\b${candidate}\\b`, "i").test(openMatch[1]));
+    if (target) return `opening ${target}.`;
+  }
+  if (/\b(?:crashed|crash|fell|gir gaya|accident)\b.{0,40}\b(?:bike|scooty|scooter|cycle)\b/i.test(userText)
+    || /\b(?:bike|scooty|scooter|cycle)\b.{0,40}\b(?:crashed|crash|fell|accident)\b/i.test(userText)) {
+    return "again? you good?";
+  }
+  if (/\bexam\b.{0,40}\b(?:destroyed|killed|ruined|finished|messed)\b/i.test(userText)
+    || /\b(?:destroyed|killed|ruined|finished|messed)\b.{0,40}\bexam\b/i.test(userText)) {
+    return "that bad huh?";
+  }
+  if (/\b(?:addicted|hooked)\b.{0,40}\b(?:scrolling|reels|shorts|instagram|phone)\b/i.test(userText)) {
+    return "yeah, that happens fast these days.";
+  }
+  if (/\b(?:i am|i'm|im|feeling|feel)\b.{0,30}\b(?:depressed|sad|low|down)\b/i.test(userText)) {
+    return "That sounds heavy. Want to talk for a minute?";
+  }
+  if (/\bwhat are you doing\b/i.test(userText)) {
+    return "talking to you.";
+  }
+  return null;
+}
+
 function conversationalFallback(userText: string, repairCooldown: boolean, recent: AssistantReplyRecord[]) {
   const candidates = fallbackCandidates(userText, repairCooldown);
   return candidates.find((candidate) => {
@@ -184,6 +217,16 @@ export async function guardAssistantReply(input: {
 }) {
   if (input.mode === "utility") {
     return { reply: input.reply, changed: false, issues: [], repairCooldown: false } satisfies AssistantReplyGuardResult;
+  }
+
+  const direct = directCalibratedReply(input.userText);
+  if (direct) {
+    return {
+      reply: direct,
+      changed: input.reply.trim() !== direct,
+      issues: input.reply.trim() === direct ? [] : ["direct_calibration_override"],
+      repairCooldown: false
+    } satisfies AssistantReplyGuardResult;
   }
 
   if (/\b(answer normally|reply normally|normal answer|seedha jawab|simple bol|simple answer)\b/i.test(input.userText)) {
