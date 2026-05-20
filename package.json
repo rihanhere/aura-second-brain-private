@@ -9,7 +9,8 @@
   "scripts": {
     "build": "npm run build --workspace apps/api",
     "start": "npm run start --workspace apps/api",
-    "typecheck": "npm run typecheck --workspace apps/api"
+    "typecheck": "npm run typecheck --workspace apps/api",
+    "test:human-conversation": "node scripts/aura-human-conversation-hardening.mjs"
   },
   "engines": {
     "node": ">=20"

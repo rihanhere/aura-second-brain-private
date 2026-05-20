@@ -1031,8 +1031,12 @@ export async function buildArchiveContext(input: {
     excludeIds: input.excludeIds,
     role
   });
+  const recallTopicTerms = normalizeTerms(archiveQuery);
+  const relevantTurns = recall.isRecall && archiveQuery && recallTopicTerms.length >= 2
+    ? turns.filter((turn) => keywordScore(archiveQuery, turn) >= Math.min(2, recallTopicTerms.length))
+    : turns;
 
-  if (!turns.length) {
+  if (!relevantTurns.length) {
     return {
       recall,
       answerHint: recall.isRecall
@@ -1044,7 +1048,7 @@ export async function buildArchiveContext(input: {
     };
   }
 
-  const context = turns
+  const context = relevantTurns
     .filter((turn) => turn.content.trim().length > 0)
     .map((turn) => {
       const when = formatInTimeZone(new Date(turn.created_at), input.timezone || turn.timezone || "UTC", "yyyy-MM-dd HH:mm");
@@ -1055,7 +1059,7 @@ export async function buildArchiveContext(input: {
 
   return {
     recall,
-    answerHint: recall.isRecall ? buildRecallAnswer(recall, turns, input.timezone) : "",
+    answerHint: recall.isRecall ? buildRecallAnswer(recall, relevantTurns, input.timezone) : "",
     context: recall.isRecall
       ? `Date recall archive for ${recall.label ?? "requested period"}:\n${context}`
       : `Relevant raw conversation archive:\n${context}`
