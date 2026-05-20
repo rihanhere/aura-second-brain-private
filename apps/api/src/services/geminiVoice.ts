@@ -48,8 +48,10 @@ function keyLabel(key: string, overrides?: ProviderOverrides) {
   return index >= 0 ? `key-${index + 1}` : "key-unknown";
 }
 
-function shouldCooldown(status: number) {
-  return [400, 401, 403, 429].includes(status);
+function cooldownMsForStatus(status: number) {
+  if (status === 429) return 10 * 60 * 1000;
+  if ([400, 401, 403].includes(status)) return 6 * 60 * 60 * 1000;
+  return 0;
 }
 
 function allConfiguredKeysCoolingDown(overrides?: ProviderOverrides) {
@@ -89,7 +91,8 @@ async function requestGeminiVoice(text: string, key: string, signal: AbortSignal
 
   if (!response.ok) {
     const message = await response.text();
-    if (shouldCooldown(response.status)) disabledUntil.set(key, Date.now() + 20 * 60 * 1000);
+    const cooldownMs = cooldownMsForStatus(response.status);
+    if (cooldownMs > 0) disabledUntil.set(key, Date.now() + cooldownMs);
     throw new Error(`Gemini voice ${response.status} on ${keyLabel(key, overrides)}: ${message.slice(0, 260)}`);
   }
 
@@ -167,23 +170,16 @@ export async function synthesizeAgentVoiceFast(text: string, overrides?: Provide
     return synthesizePocketVoice(text, overrides.chaos, options);
   }
   if (allConfiguredKeysCoolingDown(overrides)) return synthesizePocketVoice(text, overrides?.chaos, options);
-  const keys = activeKeys(overrides).slice(0, 3);
-  if (keys.length) {
-    const attempts = keys.map((key) => ({
-      key,
-      ...childAttemptSignal(options.signal)
-    }));
-    const timeout = setTimeout(() => {
-      for (const attempt of attempts) attempt.controller.abort();
-    }, 4500);
-
+  const attempts = Math.min(activeKeys(overrides).length, 2);
+  const attempted = new Set<string>();
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const key = nextGeminiKey(overrides);
+    if (!key || attempted.has(key)) break;
+    attempted.add(key);
+    const { controller, cleanup } = childAttemptSignal(options.signal);
+    const timeout = setTimeout(() => controller.abort(), 4500);
     try {
-      const promiseAttempts = attempts.map(async (attempt) => {
-        const result = await requestGeminiVoice(text, attempt.key, attempt.controller.signal, overrides);
-        return { ...result, key: keyLabel(attempt.key, overrides) };
-      });
-      const result = await Promise.any(promiseAttempts);
-      for (const attempt of attempts) attempt.controller.abort();
+      const result = await requestGeminiVoice(text, key, controller.signal, overrides);
       console.log("[gemini-tts] fast success", {
         jobId: options.jobId,
         key: result.key,
@@ -196,7 +192,7 @@ export async function synthesizeAgentVoiceFast(text: string, overrides?: Provide
       console.warn("[gemini-tts] fast failed", error instanceof Error ? error.message : error);
     } finally {
       clearTimeout(timeout);
-      for (const attempt of attempts) attempt.cleanup();
+      cleanup();
     }
   }
 
@@ -212,54 +208,47 @@ export async function synthesizeGeminiVoiceOnly(text: string, overrides?: Provid
     throw new Error("All Gemini TTS keys are cooling down.");
   }
 
-  const keys = activeKeys(overrides).slice(0, 3);
-  if (!keys.length) {
+  const activeKeyCount = activeKeys(overrides).length;
+  if (!activeKeyCount) {
     throw new Error("Gemini TTS is not configured.");
   }
 
-  const attempts = keys.map((key) => ({
-    key,
-    ...childAttemptSignal(options.signal)
-  }));
-  const timeout = setTimeout(() => {
-    for (const attempt of attempts) attempt.controller.abort();
-  }, 9000);
-
-  try {
-    const promiseAttempts = attempts.map(async (attempt) => {
-      const label = keyLabel(attempt.key, overrides);
-      try {
-        const result = await requestGeminiVoice(text, attempt.key, attempt.controller.signal, overrides);
-        return { ...result, key: label };
-      } catch (error) {
-        console.warn("[gemini-tts] primary attempt failed", {
-          key: label,
-          message: error instanceof Error ? error.message.slice(0, 320) : String(error).slice(0, 320)
-        });
-        throw error;
-      }
-    });
-    const result = await Promise.any(promiseAttempts);
-    for (const attempt of attempts) attempt.controller.abort();
-    console.log("[gemini-tts] primary success", {
-      jobId: options.jobId,
-      key: result.key,
-      model: result.model,
-      voice: result.voice,
-      bytesBase64: result.audioBase64.length
-    });
-    return result;
-  } catch (error) {
-    const messages = error instanceof AggregateError
-      ? error.errors.map((item) => item instanceof Error ? item.message : String(item)).join(" | ")
-      : error instanceof Error ? error.message : String(error);
-    const message = messages.slice(0, 700) || "Gemini TTS failed.";
-    console.warn("[gemini-tts] primary failed", message);
-    throw new Error(message);
-  } finally {
-    clearTimeout(timeout);
-    for (const attempt of attempts) attempt.cleanup();
+  const messages: string[] = [];
+  const attempts = Math.min(activeKeyCount, 4);
+  const attempted = new Set<string>();
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const key = nextGeminiKey(overrides);
+    if (!key || attempted.has(key)) break;
+    attempted.add(key);
+    const label = keyLabel(key, overrides);
+    const { controller, cleanup } = childAttemptSignal(options.signal);
+    const timeout = setTimeout(() => controller.abort(), 9000);
+    try {
+      const result = await requestGeminiVoice(text, key, controller.signal, overrides);
+      console.log("[gemini-tts] primary success", {
+        jobId: options.jobId,
+        key: result.key,
+        model: result.model,
+        voice: result.voice,
+        bytesBase64: result.audioBase64.length
+      });
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      messages.push(message);
+      console.warn("[gemini-tts] primary attempt failed", {
+        key: label,
+        message: message.slice(0, 320)
+      });
+    } finally {
+      clearTimeout(timeout);
+      cleanup();
+    }
   }
+
+  const message = (messages.join(" | ") || "Gemini TTS failed.").slice(0, 700);
+  console.warn("[gemini-tts] primary failed", message);
+  throw new Error(message);
 }
 
 export function getGeminiVoiceStatus() {
