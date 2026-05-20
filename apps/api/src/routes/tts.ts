@@ -390,7 +390,9 @@ function pcmToWav(pcm: Buffer, sampleRate = 24000, channels = 1, bitsPerSample =
 async function sendGeminiAudio(session: TtsSession, req: Request, res: import("express").Response) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
-  req.on("close", () => controller.abort());
+  res.on("close", () => {
+    if (!res.writableEnded) controller.abort();
+  });
   const startedAt = Date.now();
 
   try {
