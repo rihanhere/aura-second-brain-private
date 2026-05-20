@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: aura-api-staging
+    name: aura-api-simple-staging
     env: node
     plan: free
     rootDir: .
@@ -10,7 +10,9 @@ services:
     autoDeploy: false
     envVars:
       - key: AURA_ENV
-        value: staging
+        value: simple-staging
+      - key: AURA_SIMPLIFIED_BRAIN
+        value: "1"
       - key: HOST
         value: 0.0.0.0
       - key: DAILY_MESSAGE_LIMIT
@@ -51,5 +53,15 @@ services:
         sync: false
       - key: GEMINI_API_KEYS
         sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: ELEVENLABS_VOICE_ID
+        sync: false
+      - key: ELEVENLABS_MODEL_ID
+        value: eleven_flash_v2_5
+      - key: ELEVENLABS_OUTPUT_FORMAT
+        value: mp3_44100_128
+      - key: ELEVENLABS_MAX_REQUESTS_PER_MINUTE
+        value: "30"
       - key: REDIS_URL
         sync: false

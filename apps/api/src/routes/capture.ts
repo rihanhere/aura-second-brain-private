@@ -73,69 +73,6 @@ function normalizedUtterance(content: string) {
     .trim();
 }
 
-function deterministicCommandReply(content: string) {
-  const normalized = normalizedUtterance(content);
-  if (!normalized) return null;
-
-  if (/^(?:stop talking|stop|wait|pause|ruko|ruk|bas|cancel|chhodo|chod do|choro)\b/i.test(normalized)) {
-    return "okay.";
-  }
-
-  if (/\b(?:switch|change)\b.{0,30}\bvoice\b/i.test(normalized)
-    || /\bvoice\b.{0,30}\b(?:switch|change|male|female)\b/i.test(normalized)
-    || /\b(?:male|female)\s+voice\b/i.test(normalized)) {
-    return "I can't switch voices from here yet.";
-  }
-
-  const openMatch = normalized.match(/^\s*(?:open|launch|start)\s+([a-z][a-z0-9 ]{1,40})\s*$/i);
-  if (openMatch?.[1]) {
-    const target = openMatch[1].trim().replace(/^(the|my)\s+/i, "");
-    if (!target || /^(it|this|that|there)$/i.test(target)) return "What should I open?";
-    const displayTarget = target.toLowerCase() === "github"
-      ? "GitHub"
-      : target.charAt(0).toUpperCase() + target.slice(1);
-    if (target.toLowerCase() === "camera") return "I can't open the camera from here yet.";
-    return `I can't open ${displayTarget} from here yet.`;
-  }
-
-  return null;
-}
-
-function deterministicRecentPatternReply(content: string) {
-  const normalized = normalizedUtterance(content);
-  if (/\b(?:crashed|crash|fell|gir gaya|accident)\b.{0,40}\b(?:bike|scooty|scooter|cycle)\b/i.test(normalized)
-    || /\b(?:bike|scooty|scooter|cycle)\b.{0,40}\b(?:crashed|crash|fell|accident)\b/i.test(normalized)) {
-    return "again? you good?";
-  }
-
-  if (/\bexam\b.{0,40}\b(?:destroyed|killed|ruined|finished|messed)\b/i.test(normalized)
-    || /\b(?:destroyed|killed|ruined|finished|messed)\b.{0,40}\bexam\b/i.test(normalized)) {
-    return "that bad huh?";
-  }
-
-  if (/\b(?:addicted|hooked)\b.{0,40}\b(?:scrolling|reels|shorts|instagram|phone)\b/i.test(normalized)) {
-    return "yeah, that happens fast these days.";
-  }
-
-  if (/^\s*(?:who am i|who am i\?)\s*$/i.test(content)) {
-    return "You're Rihan.";
-  }
-
-  if (/\bwhat are you doing\b/i.test(normalized)) {
-    return "talking to you.";
-  }
-
-  if (/\b(?:i am|i'm|im)\s+going\s+out\b/i.test(normalized)) {
-    return "cool, where to?";
-  }
-
-  if (/\b(?:i am|i'm|im|feeling|feel)\b.{0,30}\b(?:depressed|sad|low|down)\b/i.test(normalized)) {
-    return "That sounds heavy. Want to talk for a minute?";
-  }
-
-  return null;
-}
-
 function deterministicSmallTalkReply(content: string) {
   const normalized = normalizedUtterance(content);
   if (!normalized) return null;
@@ -145,12 +82,43 @@ function deterministicSmallTalkReply(content: string) {
   }
 
   if (/\b(answer normally|reply normally|normal answer|seedha jawab|simple bol|simple answer)\b/i.test(content)) {
-    return "Okay. Simple and direct.";
+    return "Okay.";
   }
 
   if (/\b(watching|dekh raha|dekh rha|dekh rahi|starting)\b.{0,80}\b(movie|film|series|show|episode)\b/i.test(content)
     || /\b(movie|film|series|show|episode)\b.{0,80}\b(tonight|aaj|abhi|now|another|new)\b/i.test(content)) {
     return "Oh nice. What movie?";
+  }
+
+  if (/\bcrash(?:ed)?\b.{0,60}\b(bike|scooter|cycle)\b/i.test(content)
+    || /\b(bike|scooter|cycle)\b.{0,60}\bcrash(?:ed)?\b/i.test(content)) {
+    return "again? you good?";
+  }
+
+  if (/\bexam\b.{0,80}\b(destroyed|killed|wrecked|ruined)\b/i.test(content)
+    || /\b(destroyed|killed|wrecked|ruined)\b.{0,80}\bexam\b/i.test(content)) {
+    return "that bad huh?";
+  }
+
+  if (/\b(addicted|addiction)\b.{0,80}\b(scrolling|scroll|reels|shorts)\b/i.test(content)
+    || /\b(scrolling|scroll|reels|shorts)\b.{0,80}\b(addicted|addiction)\b/i.test(content)) {
+    return "yeah, that happens fast these days.";
+  }
+
+  if (/^\s*(who am i|who m i|main kaun|mai kaun|mein kaun)\b/i.test(content)) {
+    return "You're Rihan.";
+  }
+
+  if (/\bwhat are you doing\b/i.test(content)) {
+    return "talking to you.";
+  }
+
+  if (/\b(i'?m|i am|main|mai)\b.{0,20}\b(going out|heading out|bahar ja|baahar ja)\b/i.test(content)) {
+    return "cool, where to?";
+  }
+
+  if (/\b(i'?m|i am|feeling|feel)\b.{0,40}\b(depressed|sad|low|down)\b/i.test(content)) {
+    return "That sounds heavy. Want to talk for a minute?";
   }
 
   if (/\b(crazy|wild|insane|mad|pagal)\b.{0,60}\b(movie|film|series|show|episode)\b/i.test(content)
@@ -180,18 +148,49 @@ function deterministicSmallTalkReply(content: string) {
   }
 
   if (/\b(what can you do|what are you capable of|tum kya kya kar sakte|kya kar sakte|capable|abilities|features)\b/i.test(content)) {
-    return "I can talk with you by voice, remember important moments, recall things by date, set reminders and check-ins, and notice emotional patterns over time without spamming you with memory logs.";
+    return "I can talk naturally, set real reminders, and recall past chats when you ask me to.";
   }
 
   if (isMemoryCapabilityQuestion(content)) {
     if (/\b(date|dates|timestamp|timestamps|exact|when)\b/i.test(content)) {
       return "Yes. I keep your conversation archive with timestamps, so if you ask for a date or a specific period, I can try to recall it exactly. If I do not have a matching memory, I will say that honestly.";
     }
-    return "Yes. I remember important things quietly in the background. If you want something pinned clearly, say “save this”; otherwise I use memory naturally without turning every reply into a log.";
+    return "Yes. If you ask me to remember something, I’ll keep it. If you ask what we talked about, I can look back.";
   }
 
   if (/^\s*(stop|wait|pause|leave that|cancel|ruk|ruko|bas|chhodo|chod do)\b/i.test(content)) {
     return "Okay.";
+  }
+
+  return null;
+}
+
+function deterministicCommandReply(content: string) {
+  const normalized = normalizedUtterance(content);
+  if (!normalized) return null;
+
+  if (/^\s*(stop talking|stop|wait|pause|ruko|ruk|bas|cancel|chhodo|chod do)\b/i.test(content)) {
+    return "okay.";
+  }
+
+  if (/\b(switch|change)\b.{0,30}\b(voice|aura voice)\b/i.test(content)
+    || /\b(voice)\b.{0,30}\b(switch|change|male|female)\b/i.test(content)) {
+    return "I can't switch voices from here yet.";
+  }
+
+  const openMatch = normalized.match(/^(?:open|launch|start)\s+(.+?)(?:[?.!]+)?$/);
+  if (openMatch?.[1]) {
+    const target = openMatch[1].trim().replace(/^(the|my)\s+/i, "");
+    if (!target || /^(it|this|that|there)$/i.test(target)) {
+      return "What should I open?";
+    }
+    const displayTarget = target.toLowerCase() === "github"
+      ? "GitHub"
+      : target.charAt(0).toUpperCase() + target.slice(1);
+    if (target.toLowerCase() === "camera") {
+      return "I can't open the camera from here yet.";
+    }
+    return `I can't open ${displayTarget} from here yet.`;
   }
 
   return null;
@@ -226,56 +225,6 @@ function deterministicConversationRepairReply(content: string) {
   return null;
 }
 
-function wantsExactRecallWording(content: string) {
-  return /\b(?:exact|exactly|date|time|timestamp|when|what day|which day|archive|history|full|verbatim)\b/i.test(content)
-    || /\b(?:kab|kis din|tareekh|tarikh|samay)\b/i.test(content);
-}
-
-function stripTimestampPrefix(text: string) {
-  return text
-    .replace(/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\s*/i, "")
-    .replace(/^\[[^\]]+\]\s*/i, "")
-    .replace(/^User:\s*/i, "")
-    .replace(/^AURA:\s*/i, "")
-    .replace(/^"|"$/g, "")
-    .trim();
-}
-
-function polishRecallReply(reply: string, content: string) {
-  if (wantsExactRecallWording(content)) return reply;
-  const clean = reply.replace(/\s+/g, " ").trim();
-
-  if (/^I don'?t have (?:a )?clear memory/i.test(clean) || /^I can'?t find a clear memory/i.test(clean)) {
-    return "I don't have that clearly here.";
-  }
-
-  const quoted = clean.match(/"([^"]{4,220})"/);
-  if (quoted?.[1]) {
-    return `Yeah, you said: "${stripTimestampPrefix(quoted[1])}"`;
-  }
-
-  if (/^From .+ you said this/i.test(clean) || /^From .+ I remember this/i.test(clean)) {
-    const afterColon = clean.split(/:\s*/).slice(1).join(": ");
-    const compact = stripTimestampPrefix(afterColon || clean);
-    return compact ? `Yeah, you said: "${compact.slice(0, 220)}"` : "Yeah, we touched on that.";
-  }
-
-  if (/^From .+ you said these things/i.test(clean) || /^From .+ I remember these moments/i.test(clean) || /^These are the moments/i.test(clean)) {
-    const snippets = [...reply.matchAll(/"([^"]{4,160})"/g)]
-      .map((match) => stripTimestampPrefix(match[1]))
-      .filter(Boolean)
-      .slice(0, 3);
-    if (snippets.length) return `Yeah, a few things: ${snippets.join("; ")}.`;
-  }
-
-  return clean
-    .replace(/^From your recent history,?\s*/i, "")
-    .replace(/^From our recent conversation,?\s*/i, "")
-    .replace(/^I remember that\s+/i, "Yeah, ")
-    .replace(/^About .+?, I remember that\s+/i, "Yeah, ")
-    .trim();
-}
-
 function voiceTextForReply(reply: string) {
   const clean = reply.replace(/\s+/g, " ").trim();
   if (/^From .+ I remember these moments/i.test(reply) || /^These are the moments/i.test(reply) || /\n- \d{4}-\d{2}-\d{2}/.test(reply)) {
@@ -300,11 +249,6 @@ function languagePreferenceGuidance(preference: "auto" | "en" | "hi" | "hinglish
 function polishCompanionReply(reply: string, content: string, mode: string) {
   if (mode === "utility") return reply;
   const cleaned = reply
-    .replace(/\bIt takes courage to[^.!?]*[.!?]?/gi, "")
-    .replace(/\bI'?m here to listen and support you[^.!?]*[.!?]?/gi, "")
-    .replace(/\bIt'?s important to acknowledge your feelings[^.!?]*[.!?]?/gi, "")
-    .replace(/\bYour feelings are valid[^.!?]*[.!?]?/gi, "")
-    .replace(/\bIt sounds like you(?:'re| are) going through a lot[^.!?]*[.!?]?/gi, "That sounds heavy.")
     .replace(/\b(?:on|at)\s+\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?\b[^.!?]*[.!?]?/gi, "")
     .replace(/\b(?:from your memory|from memory|memory says|emotional continuity suggests|temporal context suggests)\b[^.!?]*[.!?]?/gi, "")
     .replace(/\bAs you (?:said|mentioned|told me)(?: earlier| before| previously)?,?\s*/gi, "")
@@ -321,6 +265,42 @@ function polishCompanionReply(reply: string, content: string, mode: string) {
     .split(/(?<=[.!?])\s+/)
     .filter((sentence) => !/^\s*(you (?:said|mentioned|told me)|i remember|as you (?:said|mentioned|told me)|from your memory|memory says|emotional continuity suggests)/i.test(sentence));
   return (sentences.join(" ").trim() || cleaned).trim();
+}
+
+function wantsExactRecallWording(content: string) {
+  return /\b(exact|date|timestamp|time|when|what day|which day|history|archive)\b/i.test(content)
+    || /\b(kab|tareekh|tarikh|date|time|exact)\b/i.test(content);
+}
+
+function polishRecallReply(reply: string, content: string) {
+  if (wantsExactRecallWording(content)) return reply;
+  const clean = reply.replace(/\s+/g, " ").trim();
+
+  if (/^I don'?t have a clear memory from\b/i.test(clean)) {
+    return "I don't have that clearly here.";
+  }
+
+  const single = clean.match(/^From .+?, (?:you said this|I remember this)(?: about .*?)?: \d{4}-\d{2}-\d{2} \d{2}:\d{2}: "(.+)"$/i);
+  if (single?.[1]) {
+    return `Yeah, you said: "${single[1]}"`;
+  }
+
+  if (/^From .+?, (?:you said these things|I remember these moments)/i.test(clean)) {
+    const snippets = [...clean.matchAll(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}: "([^"]+)"/g)]
+      .map((match) => match[1])
+      .filter(Boolean)
+      .slice(0, 3);
+    if (snippets.length === 1) return `Yeah, you said: "${snippets[0]}"`;
+    if (snippets.length > 1) return `Yeah, a few things: ${snippets.map((item) => `"${item}"`).join("; ")}`;
+  }
+
+  return reply
+    .replace(/^From your recent history,\s*/i, "")
+    .replace(/^From .*?,\s*/i, "")
+    .replace(/\bI remember this(?: about [^:]+)?:\s*/i, "Yeah, I found: ")
+    .replace(/\byou said this(?: about [^:]+)?:\s*/i, "Yeah, you said: ")
+    .replace(/\b\d{4}-\d{2}-\d{2} \d{2}:\d{2}: /g, "")
+    .trim();
 }
 
 function sleep(ms: number) {
@@ -520,20 +500,6 @@ async function buildActiveSessionContext(userId: string, sessionId: string, excl
     .join("\n");
 }
 
-async function buildRecentChatMessages(userId: string, sessionId: string, excludeTurnId?: string): Promise<ChatMessage[]> {
-  const turns = (await listConversationTurns(userId, 80))
-    .filter((turn) => turn.session_id === sessionId && turn.id !== excludeTurnId)
-    .slice(0, 24)
-    .reverse()
-    .filter((turn) => turn.content.trim().length > 0)
-    .slice(-12);
-
-  return turns.map((turn) => ({
-    role: turn.role,
-    content: turn.content.replace(/\s+/g, " ").trim().slice(0, 900)
-  }));
-}
-
 function asksCurrentSessionSummary(content: string) {
   return /\b(what were we talking about|what are we talking about|what was i saying|what did we just discuss|current conversation|this conversation|abhi.*(baat|talk)|kya.*baat.*kar|hum.*kya.*baat)\b/i.test(content);
 }
@@ -618,10 +584,6 @@ async function deRepeatCompanionReply(reply: string, content: string, userId: st
     || (/\b(?:switch|change)\b.{0,40}\b(?:voice|male|female)\b/i.test(content) && /\bcan't switch voices\b/i.test(reply))) {
     return reply;
   }
-  const directCommand = deterministicCommandReply(content);
-  if (directCommand) return directCommand;
-  const directPattern = deterministicRecentPatternReply(content);
-  if (directPattern) return directPattern;
   if (/^\s*(hmm+|hm+|umm+|uh+|haan|ha|ok|okay|acha|achha|huh)\s*\.?$/i.test(content)) {
     return "Yeah?";
   }
@@ -687,6 +649,7 @@ captureRouter.post("/", enforceDailyLimit, async (req, res, next) => {
     const scaleUseRealLlm = scaleMode === "llm-sample" && booleanHeader(req.header("x-aura-use-real-llm"));
     const useMockBrain = scaleMode === "structure-mock" || (scaleMode === "llm-sample" && !scaleUseRealLlm);
     const skipExternalAi = Boolean(scaleMode);
+    const simplifiedBrain = process.env.AURA_SIMPLIFIED_BRAIN !== "0";
     const providerOverrides = providerOverridesFromRequest(req);
     const createdAt = providerOverrides.testCreatedAt ? new Date(providerOverrides.testCreatedAt) : new Date();
     const runtimeTime = buildRuntimeTimeContext(createdAt, body.timezone);
@@ -717,14 +680,20 @@ captureRouter.post("/", enforceDailyLimit, async (req, res, next) => {
       analysis.shouldStore = false;
       analysis.importantAutoMemory = false;
     }
+    if (simplifiedBrain && !body.pendingCheckIn) {
+      analysis.shouldStore = Boolean(analysis.explicitSaveIntent);
+      analysis.importantAutoMemory = Boolean(analysis.explicitSaveIntent);
+    }
     const embedding = analysis.shouldStore && !skipExternalAi ? await createEmbedding(`${analysisContent}\n${analysis.summary}`, providerOverrides) : [];
 	    const appSessionId = body.appSession?.id ?? req.header("x-aura-app-session-id");
 	    const isNewActiveSession = body.appSession?.newActiveSession === true;
 	    const sessionId = activeAppSessionIdFromHeader(appSessionId, userId, body.timezone, createdAt);
 
-    await maybeSummarizeIdleSession(userId).catch((error) => {
-      console.warn(`Idle session summary failed: ${error instanceof Error ? error.message : error}`);
-    });
+    if (!simplifiedBrain) {
+      await maybeSummarizeIdleSession(userId).catch((error) => {
+        console.warn(`Idle session summary failed: ${error instanceof Error ? error.message : error}`);
+      });
+    }
 
     const userTurn = await saveConversationTurn({
       userId,
@@ -745,15 +714,17 @@ captureRouter.post("/", enforceDailyLimit, async (req, res, next) => {
       return null;
     });
 
-    await observeUserCognitionSignal({
-      userId,
-      content: body.content,
-      timezone: body.timezone,
-      createdAt
-    }).catch((error) => {
-      console.warn(`User cognition profile update failed: ${error instanceof Error ? error.message : error}`);
-      return null;
-    });
+    if (!simplifiedBrain) {
+      await observeUserCognitionSignal({
+        userId,
+        content: body.content,
+        timezone: body.timezone,
+        createdAt
+      }).catch((error) => {
+        console.warn(`User cognition profile update failed: ${error instanceof Error ? error.message : error}`);
+        return null;
+      });
+    }
 
     const memory = analysis.shouldStore
       ? await saveMemory(userId, analysisContent, analysis, embedding).catch((error) => {
@@ -768,6 +739,201 @@ captureRouter.post("/", enforceDailyLimit, async (req, res, next) => {
           return null;
         })
       : null;
+    const mockReply = useMockBrain
+      ? scaleMockReply({
+          userId,
+          content: body.content,
+          memoryContext: "",
+          archiveContext: "",
+          recallHint: ""
+        })
+      : null;
+
+    if (simplifiedBrain) {
+      const memoryIntent = repeatLastReply
+        ? "conversation_history_recall" as const
+        : classifyMemoryIntent({
+            content: body.content,
+            dateRecall: null,
+            reminderDraft: reminderDraft && !body.pendingCheckIn ? reminderDraft : null,
+            explicitSaveIntent: analysis.explicitSaveIntent
+          });
+      const recallMode = memoryIntentMode(memoryIntent);
+      const wantsArchive = Boolean(
+        repeatLastReply
+        || currentSessionQuestion
+        || (recallMode === "utility" && !reminderDraft && !body.pendingCheckIn && !analysis.explicitSaveIntent)
+      );
+      const archiveContext = wantsArchive
+        ? await buildArchiveContext({
+            userId,
+            query: body.content,
+            timezone: body.timezone,
+            excludeIds: userTurn ? [userTurn.id] : []
+          }).catch(() => ({ recall: { isRecall: false }, context: "", answerHint: "" }))
+        : { recall: { isRecall: false }, context: "", answerHint: "" };
+      const activeSessionContext = await buildActiveSessionContext(userId, sessionId, userTurn?.id).catch(() => "No active session context available.");
+      const deterministicRepeatReply = repeatLastReply
+        ? await repeatLastAuraReply(userId).catch(() => "I could not find my last reply clearly.")
+        : null;
+      const deterministicCommand = !body.pendingCheckIn && !reminderDraft && !deterministicRepeatReply
+        ? deterministicCommandReply(body.content)
+        : null;
+      const deterministicRepairReply = !body.pendingCheckIn && !reminderDraft && !archiveContext.recall.isRecall && !deterministicRepeatReply
+        ? deterministicConversationRepairReply(body.content)
+        : null;
+      const deterministicTimeReply = !body.pendingCheckIn && !reminderDraft && !deterministicRepeatReply
+        ? await deterministicRuntimeTimeReply(body.content, userId, sessionId, userTurn?.id, runtimeTime, createdAt).catch(() => null)
+        : null;
+      const deterministicReply = !body.pendingCheckIn && !reminderDraft && !archiveContext.recall.isRecall && !deterministicRepeatReply
+        ? deterministicSmallTalkReply(body.content)
+        : null;
+      const deterministicActiveReply = !body.pendingCheckIn && !reminderDraft && !deterministicRepeatReply && !deterministicReply
+        ? await deterministicActiveSessionReply(body.content, userId, sessionId, userTurn?.id, isNewActiveSession).catch(() => null)
+        : null;
+      const deterministicRecallReply = !body.pendingCheckIn && !reminderDraft && archiveContext.recall.isRecall && archiveContext.answerHint
+        ? archiveContext.answerHint
+        : null;
+      const generationMessages: ChatMessage[] = [
+        {
+          role: "system",
+          content: "You are Aura, a calm voice-first AI assistant. Talk naturally and intelligently like a thoughtful human. Focus mainly on the current conversation. Keep replies warm, concise, relaxed, and emotionally pleasant. Do not mention memory or past conversations unless the user explicitly asks. Do not over-analyze emotions."
+        },
+        {
+          role: "user",
+          content: [
+            `Recent conversation:\n${activeSessionContext}`,
+            runtimeTime.promptLine,
+            languagePreferenceGuidance(body.languagePreference),
+            archiveContext.answerHint ? `Recall answer if useful: ${archiveContext.answerHint}` : "",
+            `User: ${body.content}`
+          ].filter(Boolean).join("\n\n")
+        }
+      ];
+      let reply = reminderDraft && !body.pendingCheckIn
+        ? reminderReply(reminderDraft)
+        : deterministicRepeatReply
+          ?? deterministicCommand
+          ?? deterministicRepairReply
+          ?? deterministicTimeReply
+          ?? deterministicReply
+          ?? deterministicActiveReply
+          ?? deterministicRecallReply
+          ?? mockReply
+          ?? await completeCalmSystemPrompt(generationMessages, providerOverrides);
+
+      if (!deterministicRecallReply && !reminderDraft && archiveContext.recall.isRecall && archiveContext.answerHint) {
+        reply = archiveContext.answerHint;
+      }
+      if (!body.pendingCheckIn && !reminderDraft && archiveContext.recall.isRecall) {
+        reply = polishRecallReply(reply, body.content);
+      }
+      if (analysis.explicitSaveIntent) {
+        reply = "got it, i'll remember that.";
+      }
+
+      const checkInAnswer = body.pendingCheckIn ? detectCheckInAnswer(body.content) : null;
+      const checkInResult = body.pendingCheckIn
+        ? {
+            reminderId: body.pendingCheckIn.id,
+            answer: checkInAnswer,
+            handled: checkInAnswer === "yes" || checkInAnswer === "no"
+          }
+        : null;
+      if (body.pendingCheckIn && checkInAnswer === "yes") {
+        reply = "You started around the time you asked me to check in. Try not to add more right now. Drink some water, settle in, and do something you actually enjoy while this passes.";
+      } else if (body.pendingCheckIn && checkInAnswer === "no") {
+        reply = "Good. Keep that promise to yourself for a little longer. Let the urge pass, drink some water, and do something calm for the next few minutes.";
+      } else if (body.pendingCheckIn && checkInAnswer === "unclear") {
+        reply = "Are you still doing it, yes or no?";
+      }
+
+      if (!analysis.explicitSaveIntent && !archiveContext.recall.isRecall && !deterministicTimeReply) {
+        reply = polishCompanionReply(reply, body.content, recallMode);
+        reply = reply.replace(/\b(I\s+)?(saved|save|remembered|stored)\s+(this|that|it|moment|journal entry|memory)[^.!?]*[.!?]?/gi, "").trim() || "Okay.";
+        reply = await deRepeatCompanionReply(reply, body.content, userId, sessionId, recallMode);
+        const assistantGuard = await guardAssistantReply({
+          userId,
+          sessionId,
+          userText: body.content,
+          reply,
+          mode: recallMode
+        }).catch(() => ({ reply, changed: false, issues: [], repairCooldown: false }));
+        reply = assistantGuard.reply;
+      }
+
+      const assistantTurn = await saveConversationTurn({
+        userId,
+        role: "assistant",
+        content: reply,
+        inputMode: "assistant",
+        timezone: body.timezone,
+        sessionId,
+        createdAt,
+        metadata: {
+          source: "capture",
+          simplifiedBrain: true,
+          userTurnId: userTurn?.id ?? null,
+          appSession: body.appSession ?? null,
+          dateRecall: archiveContext.recall,
+          recallMode,
+          memoryIntent,
+          checkInResult,
+          reminder: savedReminder
+        }
+      }).catch((error) => {
+        console.warn(`Conversation archive assistant turn failed: ${error instanceof Error ? error.message : error}`);
+        return null;
+      });
+
+      await recordAssistantReply({
+        userId,
+        sessionId,
+        reply,
+        createdAt
+      }).catch((error) => {
+        console.warn(`Assistant reply memory save failed: ${error instanceof Error ? error.message : error}`);
+      });
+
+      const spokenReply = voiceTextForReply(reply);
+      const voice = skipVoice
+        ? null
+        : await queueVoiceSynthesis({
+            userId,
+            text: spokenReply,
+            priority: reminderDraft || body.pendingCheckIn ? "reminder" : "reply",
+            speechSessionId: req.header("x-aura-speech-session-id") ?? null,
+            interruptPrevious: true,
+            staleAfterMs: undefined,
+            overrides: providerOverrides,
+            fast: true
+          });
+
+      res.json({
+        reply,
+        memory,
+        analysis,
+        toolCall,
+        usage: res.locals.usage ?? null,
+        reminder: savedReminder,
+        reminderDraft,
+        checkInResult,
+        voice,
+        scaleTest: scaleMode ? {
+          mode: scaleMode,
+          usedRealLlm: !useMockBrain,
+          skippedExternalAi: skipExternalAi
+        } : null,
+        archive: {
+          userTurn,
+          assistantTurn,
+          dateRecall: archiveContext.recall,
+          recallMode,
+          memoryIntent
+        }
+      });
+      return;
+    }
 
     await maybeRefreshWorkingMemory(userId, body.timezone, createdAt).catch((error) => {
       console.warn(`Working memory refresh failed: ${error instanceof Error ? error.message : error}`);
@@ -976,72 +1142,64 @@ captureRouter.post("/", enforceDailyLimit, async (req, res, next) => {
     const deterministicCommand = !body.pendingCheckIn && !reminderDraft && !deterministicRepeatReply
       ? deterministicCommandReply(body.content)
       : null;
-    const deterministicRepairReply = !body.pendingCheckIn && !reminderDraft && !archiveContext.recall.isRecall && !deterministicRepeatReply && !deterministicCommand
+    const deterministicRepairReply = !body.pendingCheckIn && !reminderDraft && !archiveContext.recall.isRecall && !deterministicRepeatReply
       ? deterministicConversationRepairReply(body.content)
       : null;
-    const deterministicPatternReply = !body.pendingCheckIn && !reminderDraft && !archiveContext.recall.isRecall && !deterministicRepeatReply && !deterministicCommand
-      ? deterministicRecentPatternReply(body.content)
-      : null;
-    const deterministicReply = !body.pendingCheckIn && !reminderDraft && !archiveContext.recall.isRecall && !deterministicRepeatReply && !deterministicCommand
+    const deterministicReply = !body.pendingCheckIn && !reminderDraft && !archiveContext.recall.isRecall && !deterministicRepeatReply
       ? deterministicSmallTalkReply(body.content)
       : null;
-    const deterministicActiveReply = !body.pendingCheckIn && !reminderDraft && !deterministicRepeatReply && !deterministicCommand && !deterministicPatternReply && !deterministicReply
-      ? await deterministicActiveSessionReply(body.content, userId, sessionId, userTurn?.id, isNewActiveSession).catch(() => null)
-      : null;
-    const deterministicTimeReply = !body.pendingCheckIn && !reminderDraft && !deterministicRepeatReply && !deterministicCommand
+	    const deterministicActiveReply = !body.pendingCheckIn && !reminderDraft && !deterministicRepeatReply && !deterministicReply
+	      ? await deterministicActiveSessionReply(body.content, userId, sessionId, userTurn?.id, isNewActiveSession).catch(() => null)
+	      : null;
+    const deterministicTimeReply = !body.pendingCheckIn && !reminderDraft && !deterministicRepeatReply
       ? await deterministicRuntimeTimeReply(body.content, userId, sessionId, userTurn?.id, runtimeTime, createdAt).catch(() => null)
       : null;
     const deterministicRecallReply = !body.pendingCheckIn && !reminderDraft && archiveContext.recall.isRecall && archiveContext.answerHint
-      ? polishRecallReply(archiveContext.answerHint, body.content)
+      ? archiveContext.answerHint
       : null;
-    const recentChatMessages = await buildRecentChatMessages(userId, sessionId, userTurn?.id).catch(() => []);
-    const cleanGenerationMessages: ChatMessage[] = recallMode === "utility"
+    const generationMessages: ChatMessage[] = recallMode === "utility"
       ? [
           {
             role: "system",
             content: "You are Aura, a natural voice-first AI assistant. Reply conversationally and concisely."
           },
-          ...recentChatMessages,
           {
             role: "user",
             content: [
-              body.content,
-              deterministicRecallReply ? `Useful recall answer: ${deterministicRecallReply}` : "",
-              archiveContext.context && wantsExactRecallWording(body.content) ? `Exact recall context: ${archiveContext.context}` : ""
-            ].filter(Boolean).join("\n")
+              `User: ${body.content}`,
+              runtimeTime.promptLine,
+              archiveContext.answerHint ? `Relevant recall answer: ${archiveContext.answerHint}` : "",
+              archiveContext.context ? `Relevant recall context:\n${archiveContext.context}` : "",
+              `Recent conversation:\n${activeSessionContext}`
+            ].filter(Boolean).join("\n\n")
           }
         ]
       : [
           {
             role: "system",
-            content: "You are Aura, a natural voice-first AI assistant. Reply conversationally and concisely."
+            content: "You are Aura, a natural voice-first AI assistant. Reply conversationally and concisely. Keep it light, direct, and human. Do not mention memory, archive, tools, routing, analysis, or internal context unless the user explicitly asks technically."
           },
-          ...recentChatMessages,
           {
             role: "user",
             content: [
-              body.content,
+              `Recent conversation:\n${activeSessionContext}`,
               runtimeTime.promptLine,
-              languagePreferenceGuidance(body.languagePreference)
-            ].join("\n")
+              languagePreferenceGuidance(body.languagePreference),
+              `User: ${body.content}`
+            ].join("\n\n")
           }
         ];
-    const mockReply = useMockBrain
-      ? scaleMockReply({
-          userId,
-          content: body.content,
-          memoryContext,
-          archiveContext: archiveContext.context,
-          recallHint: archiveContext.answerHint
-        })
-      : null;
 
     let reply = reminderDraft && !body.pendingCheckIn
       ? reminderReply(reminderDraft)
-      : deterministicRepeatReply ?? deterministicCommand ?? deterministicRepairReply ?? deterministicPatternReply ?? deterministicTimeReply ?? deterministicReply ?? deterministicActiveReply ?? deterministicRecallReply ?? mockReply ?? await completeCalmSystemPrompt(cleanGenerationMessages, providerOverrides);
+      : deterministicRepeatReply ?? deterministicCommand ?? deterministicRepairReply ?? deterministicTimeReply ?? deterministicReply ?? deterministicActiveReply ?? deterministicRecallReply ?? mockReply ?? await completeCalmSystemPrompt(generationMessages, providerOverrides);
 
     if (!deterministicRecallReply && !reminderDraft && archiveContext.recall.isRecall && archiveContext.answerHint) {
-      reply = polishRecallReply(archiveContext.answerHint, body.content);
+      reply = archiveContext.answerHint;
+    }
+
+    if (!body.pendingCheckIn && !reminderDraft && archiveContext.recall.isRecall) {
+      reply = polishRecallReply(reply, body.content);
     }
 
     if (analysis.explicitSaveIntent) {
