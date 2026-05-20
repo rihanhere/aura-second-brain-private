@@ -1,0 +1,55 @@
+services:
+  - type: web
+    name: aura-api-staging
+    env: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install --include=dev && npm run build --workspace apps/api
+    startCommand: npm run start --workspace apps/api
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: AURA_ENV
+        value: staging
+      - key: HOST
+        value: 0.0.0.0
+      - key: DAILY_MESSAGE_LIMIT
+        value: "100"
+      - key: BETA_DAILY_MESSAGE_LIMIT
+        value: "100"
+      - key: APP_ORIGIN
+        value: "*"
+      - key: POCKET_TTS_ENABLED
+        value: "false"
+      - key: OPENROUTER_MODEL
+        value: z-ai/glm-4.5-air
+      - key: OPENROUTER_FALLBACK_MODELS
+        sync: false
+      - key: GEMINI_TTS_MODEL
+        value: gemini-2.5-flash-preview-tts
+      - key: GEMINI_TTS_VOICE
+        value: Sulafat
+      - key: GEMINI_EMBEDDING_MODEL
+        value: gemini-embedding-001
+      - key: GEMINI_EMBEDDING_DIMENSIONS
+        value: "1536"
+      - key: BRAIN_MAX_CONCURRENCY
+        value: "5"
+      - key: BRAIN_GLOBAL_MAX_CONCURRENCY
+        value: "5"
+      - key: BRAIN_QUEUE_MAX_DEPTH
+        value: "40"
+      - key: BRAIN_QUEUE_WAIT_MS
+        value: "18000"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENROUTER_API_KEYS
+        sync: false
+      - key: GROQ_API_KEYS
+        sync: false
+      - key: GEMINI_API_KEYS
+        sync: false
+      - key: REDIS_URL
+        sync: false

@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+*.log
+*.pid
+.DS_Store
+.env
+.env.*
+!.env.production.example
+apps/api/.env
+apps/api/data/
+apps/api/*.log
+apps/api/*.pid
+*.ipa
+*.xcarchive
+*.dSYM
+*.zip

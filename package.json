@@ -1,0 +1,17 @@
+{
+  "name": "aura-api-render-deploy",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AURA backend deployment package for Render.",
+  "workspaces": [
+    "apps/api"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace apps/api",
+    "start": "npm run start --workspace apps/api",
+    "typecheck": "npm run typecheck --workspace apps/api"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
