@@ -8,6 +8,8 @@ export type ClientVoiceEvent = {
   eventType:
     | "local_stt_success"
     | "local_stt_filtered_no_speech"
+    | "validation_voice_turn_request"
+    | "validation_voice_turn_started"
     | "local_tts_prewarm"
     | "local_tts_success"
     | "local_tts_failed"
@@ -19,13 +21,18 @@ export type ClientVoiceEvent = {
     | "realtime_stream_completed"
     | "realtime_stream_fallback"
     | "realtime_stream_cancelled"
+    | "reply_text_visible"
     | "tts_chunk_synth_started"
     | "tts_chunk_synth_success"
+    | "tts_audio_ready"
     | "tts_playback_started"
     | "tts_playback_finished"
     | "tts_playback_failed"
+    | "barge_in_monitor_started"
     | "barge_in_triggered"
-    | "barge_in_ignored";
+    | "barge_in_ignored"
+    | "barge_in_audio_stopped";
+  voiceRunId?: number | null;
   sttProvider?: string | null;
   ttsProvider?: string | null;
   model?: string | null;
@@ -39,11 +46,33 @@ export type ClientVoiceEvent = {
   ttsLang?: string | null;
   voiceStyle?: string | null;
   playbackStartMs?: number | null;
+  turnElapsedMs?: number | null;
+  replyTextVisibleMs?: number | null;
+  ttsSynthStartMs?: number | null;
+  ttsSynthDoneMs?: number | null;
+  ttsAudioReadyMs?: number | null;
+  ttsFileIoMs?: number | null;
+  ttsExpoLoadMs?: number | null;
+  ttsAudioModeMs?: number | null;
+  ttsPlayAsyncMs?: number | null;
+  ttsStopExistingAudioMs?: number | null;
+  ttsPlaybackStartMs?: number | null;
+  ttsFirstAudibleEstimateMs?: number | null;
+  ttsPlaybackFinishMs?: number | null;
+  ttsGapMs?: number | null;
+  audioStopMs?: number | null;
   ttsChunkIndex?: number | null;
   ttsChunkChars?: number | null;
   playbackRoute?: string | null;
+  routeBeforePlayback?: string | null;
+  routeAfterPlaybackStart?: string | null;
+  routeAfterBargeInStart?: string | null;
   bargeInDb?: number | null;
   bargeInNoiseFloor?: number | null;
+  supertonicAudioReadyMs?: number | null;
+  supertonicFileWriteMs?: number | null;
+  supertonicWasInitialized?: boolean | null;
+  supertonicWarmupComplete?: boolean | null;
   audioBytes?: number | null;
   sampleRate?: number | null;
   channels?: number | null;
@@ -94,6 +123,7 @@ export async function saveClientVoiceEvent(event: Omit<ClientVoiceEvent, "id" | 
   await persistEvents();
   console.log("[client-voice]", {
     eventType: saved.eventType,
+    voiceRunId: saved.voiceRunId,
     sttProvider: saved.sttProvider,
     ttsProvider: saved.ttsProvider,
     sherpaInitMs: saved.sherpaInitMs,
@@ -103,11 +133,33 @@ export async function saveClientVoiceEvent(event: Omit<ClientVoiceEvent, "id" | 
     supertonicInitMs: saved.supertonicInitMs,
     supertonicSynthMs: saved.supertonicSynthMs,
     supertonicRtf: saved.supertonicRtf,
+    supertonicAudioReadyMs: saved.supertonicAudioReadyMs,
+    supertonicFileWriteMs: saved.supertonicFileWriteMs,
+    supertonicWasInitialized: saved.supertonicWasInitialized,
+    supertonicWarmupComplete: saved.supertonicWarmupComplete,
     ttsLang: saved.ttsLang,
     voiceStyle: saved.voiceStyle,
     ttsChunkIndex: saved.ttsChunkIndex,
     ttsChunkChars: saved.ttsChunkChars,
+    turnElapsedMs: saved.turnElapsedMs,
+    replyTextVisibleMs: saved.replyTextVisibleMs,
+    ttsSynthStartMs: saved.ttsSynthStartMs,
+    ttsSynthDoneMs: saved.ttsSynthDoneMs,
+    ttsAudioReadyMs: saved.ttsAudioReadyMs,
+    ttsFileIoMs: saved.ttsFileIoMs,
+    ttsExpoLoadMs: saved.ttsExpoLoadMs,
+    ttsAudioModeMs: saved.ttsAudioModeMs,
+    ttsPlayAsyncMs: saved.ttsPlayAsyncMs,
+    ttsStopExistingAudioMs: saved.ttsStopExistingAudioMs,
+    ttsPlaybackStartMs: saved.ttsPlaybackStartMs,
+    ttsFirstAudibleEstimateMs: saved.ttsFirstAudibleEstimateMs,
+    ttsPlaybackFinishMs: saved.ttsPlaybackFinishMs,
+    ttsGapMs: saved.ttsGapMs,
+    audioStopMs: saved.audioStopMs,
     playbackRoute: saved.playbackRoute,
+    routeBeforePlayback: saved.routeBeforePlayback,
+    routeAfterPlaybackStart: saved.routeAfterPlaybackStart,
+    routeAfterBargeInStart: saved.routeAfterBargeInStart,
     bargeInDb: saved.bargeInDb,
     bargeInNoiseFloor: saved.bargeInNoiseFloor,
     audioBytes: saved.audioBytes,
@@ -157,12 +209,40 @@ export async function getClientVoiceSummary(limit = 250) {
   const pocketTimes = events
     .filter((event) => typeof event.pocketSynthMs === "number")
     .map((event) => event.pocketSynthMs ?? 0);
+  const supertonicTimes = events
+    .filter((event) => typeof event.supertonicSynthMs === "number")
+    .map((event) => event.supertonicSynthMs ?? 0);
+  const audioReadyTimes = events
+    .filter((event) => typeof event.ttsAudioReadyMs === "number")
+    .map((event) => event.ttsAudioReadyMs ?? 0);
+  const expoLoadTimes = events
+    .filter((event) => typeof event.ttsExpoLoadMs === "number")
+    .map((event) => event.ttsExpoLoadMs ?? 0);
+  const playbackStartTimes = events
+    .filter((event) => typeof event.ttsPlaybackStartMs === "number")
+    .map((event) => event.ttsPlaybackStartMs ?? 0);
+  const firstAudibleTimes = events
+    .filter((event) => typeof event.ttsFirstAudibleEstimateMs === "number")
+    .map((event) => event.ttsFirstAudibleEstimateMs ?? 0);
+  const chunkGaps = events
+    .filter((event) => typeof event.ttsGapMs === "number")
+    .map((event) => event.ttsGapMs ?? 0);
+  const bargeInCancelTimes = events
+    .filter((event) => typeof event.bargeInCancelMs === "number")
+    .map((event) => event.bargeInCancelMs ?? 0);
 
   return {
     total: events.length,
     counts,
     sherpaSynthMs: timingSummary(sherpaTimes),
     pocketSynthMs: timingSummary(pocketTimes),
+    supertonicSynthMs: timingSummary(supertonicTimes),
+    ttsAudioReadyMs: timingSummary(audioReadyTimes),
+    ttsExpoLoadMs: timingSummary(expoLoadTimes),
+    ttsPlaybackStartMs: timingSummary(playbackStartTimes),
+    ttsFirstAudibleEstimateMs: timingSummary(firstAudibleTimes),
+    ttsGapMs: timingSummary(chunkGaps),
+    bargeInCancelMs: timingSummary(bargeInCancelTimes),
     latest: events.slice(0, 20)
   };
 }
