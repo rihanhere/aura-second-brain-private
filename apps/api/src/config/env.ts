@@ -58,6 +58,8 @@ export const env = {
   elevenLabsTtsTimeoutMs: Number(process.env.ELEVENLABS_TTS_TIMEOUT_MS ?? 25000),
   elevenLabsMaxChars: Number(process.env.ELEVENLABS_MAX_CHARS ?? 1800),
   elevenLabsMaxRequestsPerMinute: Number(process.env.ELEVENLABS_MAX_REQUESTS_PER_MINUTE ?? 30),
+  picovoiceAccessKey: process.env.PICOVOICE_ACCESS_KEY ?? "",
+  orcaDefaultVoice: process.env.ORCA_DEFAULT_VOICE ?? "male",
   pocketTtsEnabled: process.env.POCKET_TTS_ENABLED !== "false",
   pocketTtsCommand: process.env.POCKET_TTS_COMMAND ?? "uvx",
   pocketTtsCommandArgs: (process.env.POCKET_TTS_COMMAND_ARGS ?? "pocket-tts,generate")

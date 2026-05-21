@@ -145,6 +145,20 @@ ttsRouter.get("/status", (_req, res) => {
   });
 });
 
+ttsRouter.get("/orca/config", (_req, res) => {
+  const voice = env.orcaDefaultVoice.toLowerCase().startsWith("f") ? "female" : "male";
+  res.setHeader("Cache-Control", "no-store");
+  res.json({
+    ok: true,
+    provider: "orca",
+    configured: Boolean(env.picovoiceAccessKey.trim()),
+    accessKey: env.picovoiceAccessKey.trim() || null,
+    voice,
+    modelFile: voice === "female" ? "orca_params_en_female.pv" : "orca_params_en_male.pv",
+    sampleRate: null
+  });
+});
+
 ttsRouter.post("/gemini/session", async (req, res, next) => {
   try {
     cleanupSessions();
