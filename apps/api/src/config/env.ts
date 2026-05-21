@@ -90,7 +90,9 @@ export const env = {
   auraStreamingStt: process.env.AURA_STREAMING_STT !== "false",
   auraStreamingResponse: process.env.AURA_STREAMING_RESPONSE !== "false",
   auraStreamingTtsExperimental: process.env.AURA_STREAMING_TTS_EXPERIMENTAL !== "false",
-  auraPredictiveEndpointing: process.env.AURA_PREDICTIVE_ENDPOINTING !== "false"
+  auraPredictiveEndpointing: process.env.AURA_PREDICTIVE_ENDPOINTING !== "false",
+  realtimeHeartbeatMs: Number(process.env.REALTIME_HEARTBEAT_MS ?? 25_000),
+  realtimeCaptureTimeoutMs: Number(process.env.REALTIME_CAPTURE_TIMEOUT_MS ?? 55_000)
 };
 
 export const hasSupabase = Boolean(env.supabaseUrl && env.supabaseServiceRoleKey);

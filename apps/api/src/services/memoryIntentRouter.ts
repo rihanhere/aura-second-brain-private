@@ -92,6 +92,7 @@ function isProfileRecall(content: string) {
 
 function isUserHistoryRecall(content: string) {
   return /\b(what did i|when did i|did i say|did i tell|have i told|what have i told|what did i tell|what did i ask|maine kya|mene kya|maine kab|mene kab)\b/i.test(content)
+    || /\b(?:did|have)\s+i\s+(?:ever\s+)?(?:mention|mentioned|say|said|tell|told)\b/i.test(content)
     || /\b(kya)\b.{0,30}\b(maine|mene|mainne)\b.{0,70}\b(bataya|bola|kaha|poocha|pucha)\b/i.test(content)
     || /\b(maine|mene|mainne)\b.{0,70}\b(pehle|pahle|kabhi|earlier|before)\b.{0,70}\b(bataya|bola|kaha)\b/i.test(content)
     || /(क्या).{0,30}(मैंने|मैने).{0,90}(बताया|बोला|कहा|पूछा)/i.test(content)
