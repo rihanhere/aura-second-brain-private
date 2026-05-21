@@ -29,9 +29,14 @@ export type ClientVoiceEvent = {
     | "tts_playback_finished"
     | "tts_cancelled"
     | "tts_playback_failed"
+    | "barge_in_monitor_scheduled"
+    | "barge_in_native_started"
     | "barge_in_monitor_started"
     | "barge_in_triggered"
     | "barge_in_ignored"
+    | "barge_in_listening_restart_requested"
+    | "barge_in_listening_restarted"
+    | "barge_in_listening_restart_failed"
     | "barge_in_audio_stopped";
   voiceRunId?: number | null;
   sttProvider?: string | null;
@@ -70,6 +75,9 @@ export type ClientVoiceEvent = {
   routeAfterBargeInStart?: string | null;
   bargeInDb?: number | null;
   bargeInNoiseFloor?: number | null;
+  bargeInThresholdDb?: number | null;
+  bargeInSpeechMs?: number | null;
+  bargeInArmDelayMs?: number | null;
   supertonicAudioReadyMs?: number | null;
   supertonicFileWriteMs?: number | null;
   supertonicWasInitialized?: boolean | null;
@@ -163,6 +171,9 @@ export async function saveClientVoiceEvent(event: Omit<ClientVoiceEvent, "id" | 
     routeAfterBargeInStart: saved.routeAfterBargeInStart,
     bargeInDb: saved.bargeInDb,
     bargeInNoiseFloor: saved.bargeInNoiseFloor,
+    bargeInThresholdDb: saved.bargeInThresholdDb,
+    bargeInSpeechMs: saved.bargeInSpeechMs,
+    bargeInArmDelayMs: saved.bargeInArmDelayMs,
     audioBytes: saved.audioBytes,
     sampleRate: saved.sampleRate,
     channels: saved.channels,
