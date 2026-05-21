@@ -4,20 +4,36 @@ const baseUrl = process.env.AURA_API_URL ?? "http://127.0.0.1:4000";
 const userId = `aura-perfect-assistant-${Date.now()}`;
 const timezone = process.env.AURA_TEST_TIMEZONE ?? "Asia/Kolkata";
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function capture(content, options = {}) {
-  const response = await fetch(`${baseUrl}/capture`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-user-id": userId,
-      "x-aura-skip-voice": "true",
-      ...(options.createdAt ? { "x-aura-test-created-at": options.createdAt } : {})
-    },
-    body: JSON.stringify({ content, inputMode: "text", timezone, skipVoice: true })
-  });
-  const json = await response.json().catch(() => null);
-  if (!response.ok || !json) throw new Error(`HTTP ${response.status}: ${JSON.stringify(json)}`);
-  return json;
+  let lastError = null;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const response = await fetch(`${baseUrl}/capture`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-user-id": userId,
+          "x-aura-skip-voice": "true",
+          ...(options.createdAt ? { "x-aura-test-created-at": options.createdAt } : {})
+        },
+        body: JSON.stringify({ content, inputMode: "text", timezone, skipVoice: true })
+      });
+      const text = await response.text();
+      const json = text ? JSON.parse(text) : null;
+      if (response.ok && json) return json;
+      lastError = new Error(`HTTP ${response.status}: ${text.slice(0, 500)}`);
+      if (![429, 502, 503, 504].includes(response.status)) throw lastError;
+    } catch (error) {
+      lastError = error;
+      if (attempt === 3) break;
+    }
+    await sleep(750 * attempt);
+  }
+  throw lastError ?? new Error("capture_failed");
 }
 
 function assert(condition, message, details) {
