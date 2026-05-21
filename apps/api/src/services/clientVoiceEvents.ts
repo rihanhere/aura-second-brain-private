@@ -27,6 +27,7 @@ export type ClientVoiceEvent = {
     | "tts_audio_ready"
     | "tts_playback_started"
     | "tts_playback_finished"
+    | "tts_cancelled"
     | "tts_playback_failed"
     | "barge_in_monitor_started"
     | "barge_in_triggered"
