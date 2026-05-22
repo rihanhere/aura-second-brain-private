@@ -10,6 +10,9 @@ export type ClientVoiceEvent = {
     | "local_stt_filtered_no_speech"
     | "validation_voice_turn_request"
     | "validation_voice_turn_started"
+    | "post_barge_in_submit_started"
+    | "post_barge_in_reply_visible"
+    | "submit_voice_blocked_loading_guard"
     | "local_tts_prewarm"
     | "local_tts_success"
     | "local_tts_failed"
@@ -52,6 +55,7 @@ export type ClientVoiceEvent = {
   ttsLang?: string | null;
   voiceStyle?: string | null;
   playbackStartMs?: number | null;
+  playbackVolume?: number | null;
   turnElapsedMs?: number | null;
   replyTextVisibleMs?: number | null;
   ttsSynthStartMs?: number | null;
@@ -150,6 +154,7 @@ export async function saveClientVoiceEvent(event: Omit<ClientVoiceEvent, "id" | 
     voiceStyle: saved.voiceStyle,
     ttsChunkIndex: saved.ttsChunkIndex,
     ttsChunkChars: saved.ttsChunkChars,
+    playbackVolume: saved.playbackVolume,
     turnElapsedMs: saved.turnElapsedMs,
     replyTextVisibleMs: saved.replyTextVisibleMs,
     ttsSynthStartMs: saved.ttsSynthStartMs,
